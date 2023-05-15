@@ -1,0 +1,29 @@
+.App {
+  height: 100%;
+  width: 100%; 
+  display: grid;
+  grid-gap: 20px 10px; 
+  grid-template-rows: 50% 50%; 
+  grid-template-columns: 25% 37.5% 37.5%;
+  grid-template-areas:  
+  "Settings Up-Wordmap Up-Wordmap" 
+  "Settings Down-Left-Treemap Down-Right-Scatter" 
+;
+}
+
+@media screen and (max-width: 480px) { 
+  .App { 
+    display: grid;
+    grid-gap: 20px 10px; 
+    grid-template-rows: 25%  25%  25%  25%; 
+    grid-template-columns: 100% ;
+    grid-template-areas:  
+    "Settings"
+    "Up-Wordmap" 
+    "Down-Left-Treemap"
+    "Down-Right-Scatter"  
+    ; 
+  } 
+}
+
+
