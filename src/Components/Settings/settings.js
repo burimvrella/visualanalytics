@@ -1,10 +1,10 @@
 import React from 'react'
 import './settings.css'
 
-export default function settings() {
+export default function settings(props) {
   return (
     <div className='Settings'>
-        <h1>Settings</h1>
+    
     </div>
   )
 }
