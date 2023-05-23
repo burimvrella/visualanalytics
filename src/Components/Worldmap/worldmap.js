@@ -1,12 +1,20 @@
 import React from 'react'
 import './worldmap.css'
-import * as d3 from 'd3';
+import {useData} from "./useData";
+import { Marks } from './Marks';
 
-export default function worldmap() {
+export default function Worldmap() {
+  const geoJson = useData();
+  console.log(geoJson);
+
+  if (!geoJson) {
+    return <pre>Loading...</pre>;
+  }
   return (
-  <div className="Up-Wordmap">
-    <h1>Wordmap</h1>
-  </div>
-
+      <div className="Up-Worldmap">
+        <svg width={1200} height={500}>
+          <Marks data={geoJson} />
+        </svg>
+      </div>
   )
 }
