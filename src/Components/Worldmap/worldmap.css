@@ -1,7 +1,7 @@
 pre {
   font-size: large;
 }
-.marks .land {
+.marks .country {
   fill: rgba(19, 68, 16, 0.46)
 }
 .marks .sphere {
@@ -14,4 +14,8 @@ pre {
 .marks .graticules {
   fill: none;
   stroke: #A1A1A12D
+}
+
+.country:hover {
+  fill: red;
 }

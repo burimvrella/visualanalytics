@@ -6,13 +6,13 @@ const jsonUrl = './countries-50m.json';
 
 export const useData = () => {
     const [data, setData] = useState(null);
-    console.log(data);
+    // console.log(data);
 
     useEffect(() => {
         json(jsonUrl).then(topoJson => {
-            const { countries, land } = topoJson.objects;
+            const { countries } = topoJson.objects;
             setData({
-                land: feature(topoJson, land), // convert topoJSON to geoJSON
+                countries: feature(topoJson, countries), // convert topoJSON to geoJSON
                 interiors: mesh(topoJson, countries, function(a, b) { return a !== b; })  // excluding exterior boarders of countries
             });
         });
