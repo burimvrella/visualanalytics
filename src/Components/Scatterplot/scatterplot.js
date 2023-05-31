@@ -38,23 +38,20 @@ export default function Scatterplot(props) {
 
     
     svg.append('text')
-    .style('text-anchor', 'middle')
+      .attr('id','title')
       .attr('x', width/2)
       .attr('y', - 10)
       .text('Scatterplot with random data');
     
     svg.append('text')
-        .attr('x', width/2)
+        .attr('x', width/2 - 10)
         .attr('y', height + 35)
         .text('X Axis');
 
     svg.append('text')
-        .attr('x', -35)
-        .attr('y', height/2)
-        .style('text-anchor', 'end')
-        .attr('dx','18em')
-        .attr('dy', "-11em")
-        .attr('transform','rotate(90)')
+        .attr('id','yaxis')
+        .attr('y', width/10 )
+        .attr('x', height/2 - 35)
         .text('Y Axis');
 
         

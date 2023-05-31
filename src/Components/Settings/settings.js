@@ -1,41 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
+import Dropdown from './dropdown.js';
 import './settings.css';
 
 export default function Settings(props) {
 
-  const options = [
-
+  const expierence = [
     { id: 'Trainee', value: 'Trainee developer' },
- 
     { id: 'Junior', value: 'Junior developer' },
- 
     { id: 'Mid-level', value: 'Mid-level developer' },
-
     { id: 'Senior', value: 'Senior developer' },
-    
+  ];
+
+  const gender = [
+    { id: 'man', value: 'Male' },
+    { id: 'woman', value: 'Female' },
   ];
  
-  const [value, setValue] = useState(' ');
- 
-  const handleChange = (event) => {
-    setValue(event.target.value);
-  };
-
   return (
     <div className='Settings'>
 
       <h1>Select Settings</h1>
-
-      <div className='Dropdown'>
-        <label>Choose your expierence</label>
-          <select value={value} onChange={handleChange}>
-            {options.map((option) => (
-              <option key={option.id} value={option.value}>{option.id}</option>
-            ))}
-          </select>
-      </div>
-          <p>Your expierence is {value}!</p>
-
+      <Dropdown data={expierence} lable={'Expierence Level'} />
+      <Dropdown data={gender} lable={'Gender'} />
     </div>
   )
 }
