@@ -1,9 +1,13 @@
-import React, {useRef, useEffect} from 'react'
+import React, {useRef, useEffect, useContext} from 'react'
 import './scatterplot.css'
 import * as d3 from 'd3';
+import SettingsContext from '../Settings/settingscontext';
 
 export default function Scatterplot(props) {
 
+  const settingsContext = useContext(SettingsContext);
+
+  console.log(settingsContext.age)
   console.log(props.data.length)
   const svgRef = useRef();
 

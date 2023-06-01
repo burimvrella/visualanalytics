@@ -12,3 +12,29 @@
 .Settings h1 {
   text-align: center;
 }
+
+.Settings h2 {
+  font-size: large;
+}
+
+
+.Settings label{
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 15px;
+}
+
+input#age{
+  width: 5em;
+  margin-bottom: 5px;
+}
+
+input#income{
+  width: 150px ;
+  display: inline;
+}
+
+output#incomelable{
+  display: inline;
+  float: right;
+  width: 30%;
+}

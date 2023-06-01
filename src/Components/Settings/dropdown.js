@@ -1,22 +1,21 @@
 import React, {useState} from 'react'
+import './dropdown.css'
 
 export default function Dropdown(props) {
-  console.log(props)
   const [value, setValue] = useState(' ');
  
-  const handleChange = (event) => {
+  const handleDropdown = (event) => {
     setValue(event.target.value);
   };
 
   return (
     <div className='Dropdown'>
         <label>{props.lable}: </label>
-          <select value={value} onChange={handleChange}>
+          <select id='select' value={value} onChange={handleDropdown}>
             {props.data.map((option) => (
               <option key={option.id} value={option.value}>{option.id}</option>
             ))}
           </select>
-          <p>Choosen {props.lable} {value}!</p>
       </div>
   )
 }
