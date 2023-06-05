@@ -4,6 +4,7 @@ import Settings from './Components/Settings/settings.js';
 import Worldmap from './Components/Worldmap/worldmap.js';
 import Treemap from './Components/Treemap/treemap.js';
 import Scatter from './Components/Scatterplot/scatterplot.js';
+import SettingsContext from './Components/Settings/settingscontext';
 import {useData} from "./Components/Worldmap/useData.js";
 
 function App() {
