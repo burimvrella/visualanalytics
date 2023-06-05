@@ -10,7 +10,11 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "react-svg-pan-zoom": "^3.12.1",
+    "react-zoom-pan-pinch": "^3.0.7",
+    "topojson": "^3.0.2",
+    "web-vitals": "^2.1.4",
+    "world-atlas": "^2.0.2"
   },
   "scripts": {
     "start": "react-scripts start",
