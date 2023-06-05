@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useRef} from 'react'
 import './treemap.css'
 import * as d3 from 'd3';
 
@@ -8,7 +8,7 @@ const height = 400;
 export default function Treemap({data}) {
   const svgRef = useRef(null);
 
-  function RenderTreemap() {
+  function renderTreemap() {
     const svg = d3.select(svgRef.current);
 
     svg.attr('width', width).attr('height', height);
@@ -35,12 +35,20 @@ export default function Treemap({data}) {
       .attr('width', (d) => d.x1 - d.x0)
       .attr('height', (d) => d.y1 - d.y0)
       .attr('fill', (d) => colorScale(d.data.name));
+
+    const fontSize = 12;
+    nodes
+      .append('text')
+      .text((d) => `${d.data.name}: ${d.data.value}`)
+      .attr('font-size', `${fontSize}px`)
+      .attr('x', 3)
+      .attr('y', fontSize);
   }
 
   if (!data) {
     return <pre>Loading...</pre>;
   }
-  RenderTreemap()
+  renderTreemap()
 
   return (
     <div className="Down-Left-Treemap">
