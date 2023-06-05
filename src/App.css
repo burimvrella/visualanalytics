@@ -5,7 +5,7 @@
   grid-template-rows: 50% 50%; 
   grid-template-columns: 15% 42% 42%;
   grid-template-areas:  
-  "Settings Up-Wordmap Up-Wordmap" 
+  "Settings Up-Worldmap Up-Worldmap"
   "Settings Down-Left-Treemap Down-Right-Scatter" 
 ;
 }

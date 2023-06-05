@@ -1,5 +1,21 @@
-.Up-Wordmap {
-  grid-area: Up-Wordmap;  
-  background-color: blue;
+pre {
+  font-size: large;
+}
+.marks .country {
+  fill: rgba(19, 68, 16, 0.46)
+}
+.marks .sphere {
+  fill: #74A8F85E
+}
+.marks .interiors {
+  fill: none;
+  stroke: rgba(0, 0, 0, 0.29);
+}
+.marks .graticules {
+  fill: none;
+  stroke: #A1A1A12D
 }
 
+.country:hover {
+  fill: red;
+}
