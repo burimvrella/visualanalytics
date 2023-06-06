@@ -6,6 +6,7 @@ import Treemap from './Components/Treemap/treemap.js';
 import Scatter from './Components/Scatterplot/scatterplot.js';
 import {useData} from './Components/Worldmap/useData.js';
 import  {LoadTreeMapData} from './Components/Treemap/LoadTreeMapData.js';
+import SettingsContext from './Components/Settings/settingscontext';
 
 function App() {
   const [data] = useState([[90, 20], [20, 100], [66, 44], [53, 80], [24, 182], [80, 72], [10, 76], [33, 150], [100, 15]]);
