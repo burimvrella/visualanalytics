@@ -1,5 +1,21 @@
-
 .Down-Right-Scatter {
   grid-area: Down-Right-Scatter;
-  background-color: none;
+  margin: 3px;
+  background-color: lightgray;
+  padding: 20px 50px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: black;
+  border-radius: 10px;
+  text-align: center;
+}
+text#title{
+  font-size: 25px;
+  font-weight: bold;
+  text-anchor: middle;
+}
+
+text#yaxis{
+  transform: rotate(90deg);
+  transform-origin: top left;
 }
