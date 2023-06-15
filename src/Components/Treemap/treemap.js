@@ -53,7 +53,7 @@ export default function Treemap({data}) {
   return (
     <div className="Down-Left-Treemap">
       <h1>Treemap</h1>
-      <svg ref={svgRef} width={width} height={height}></svg>
+      <svg ref={svgRef} viewBox="0 0 450 400"></svg>
     </div>
   )
 }

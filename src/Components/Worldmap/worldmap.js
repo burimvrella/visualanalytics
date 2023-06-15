@@ -33,7 +33,7 @@ export default function Worldmap({geoJson}) {
   }
   return (
     <div className="Up-Worldmap">
-      <svg ref={svgRef} width={width} height={height}>
+      <svg ref={svgRef} viewBox="0 0 1200 500">
         <g className="marks" ref={gref}>
           <path className="sphere" d={path({type: 'Sphere'})} /* outline of the globe */ />
           <path className="graticules" d={path(graticule())}/>
