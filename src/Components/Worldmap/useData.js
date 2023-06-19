@@ -6,7 +6,7 @@ const jsonUrl = './countries-50m.json';
 
 export const useData = () => {
   const [data, setData] = useState(null);
-  console.log('useData()');
+  //console.log('useData()');
 
   useEffect(() => {
     json(jsonUrl).then(topoJson => {
