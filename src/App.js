@@ -8,25 +8,25 @@ import {useData} from './Components/Worldmap/useData.js';
 import  {LoadTreeMapData} from './Components/Treemap/LoadTreeMapData.js';
 import SettingsContext from './Components/Settings/settingscontext';
 import * as d3 from 'd3';
-import surveydata from './data/surveydata.csv';
+import surveydata from './data/surveydata_v2.csv';
 
 function App() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
     d3.csv(surveydata).then(data => {
-      setData(data.slice(0,20))
+      setData(data)
     });
   }, []);
 
+
   const geoJson = useData();
-  const treemapData = LoadTreeMapData();
 
   return (
     <div className="App">
       <Settings data={data}/>
       <Worldmap geoJson={geoJson}/>
-      <Treemap data={treemapData}/>
+      <Treemap data={data}/>
       <Scatter data={data}/>
     </div>
   );
