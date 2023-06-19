@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import './App.css';
 import Settings from './Components/Settings/settings.js';
 import Worldmap from './Components/Worldmap/worldmap.js';
@@ -8,17 +8,15 @@ import {useData} from './Components/Worldmap/useData.js';
 import  {LoadTreeMapData} from './Components/Treemap/LoadTreeMapData.js';
 import SettingsContext from './Components/Settings/settingscontext';
 import * as d3 from 'd3';
+import surveydata from './data/surveydata.csv';
 
 function App() {
   const [data, setData] = useState([]);
 
-  React.useEffect(() => {
-
-    d3.csv("./data/surveydata.csv").then((d) => {
-      console.log(d)
-      setData(d);
+  useEffect(() => {
+    d3.csv(surveydata).then(data => {
+      setData(data.slice(0,20))
     });
-    return () => undefined;
   }, []);
 
   const geoJson = useData();

@@ -7,8 +7,8 @@ export default function Scatterplot(props) {
 
   const settingsContext = useContext(SettingsContext);
 
-  console.log(settingsContext.age)
-  console.log(props.data.length)
+  //console.log(settingsContext.age)
+  //console.log(props.data.length)
   const svgRef = useRef();
 
   useEffect(() => {
@@ -21,21 +21,30 @@ export default function Scatterplot(props) {
                   .style('margin', '20px') // TODO check later if needed
                   .style('margin-left', '45px');
 
-    const xScale = d3.scaleLinear()
-                    .domain([0,100])
+
+    const xScale = d3.scalePoint()
+                    .domain(props.data.map(function(d) { return d.Country; }))
                     .range([0,width]);
 
-    const yScale = d3.scaleLinear()
-                    .domain([0,200])
+    const yScale = d3.scalePoint()
+                    .domain(props.data.map(function(d) { return d.Employment; }))
                     .range([height,0]);
 
-    const xAxis = d3.axisBottom(xScale).ticks(props.data.length);
+    const xAxis = d3.axisBottom(xScale);
 
-    const yAxis = d3.axisLeft(yScale).ticks(10);
+    const yAxis = d3.axisLeft(yScale);
 
     svg.append('g')
+      .attr("class", "x axis")
       .call(xAxis)
-      .attr('transform', `translate(0, ${height})`);
+      .attr('transform', `translate(0, ${height})`)
+      .selectAll("text")
+        .attr("y", 0)
+        .attr("x", 9)
+        .attr("dy", ".35em")
+        .attr("transform", "rotate(90)")
+        .style("text-anchor", "start");
+      
 
     svg.append('g')
       .call(yAxis);
@@ -63,8 +72,8 @@ export default function Scatterplot(props) {
         .data(props.data)
         .enter()
         .append('circle')
-        .attr('cx', d => xScale(d[0]))
-        .attr('cy', d => yScale(d[1]))
+        .attr('cx', d => xScale(d.Country))
+        .attr('cy', d => yScale(d.Employment))
         .attr('r', 2)
         .on('mouseover', function(d, i) {
           // make the mouseover'd element
