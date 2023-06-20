@@ -5,21 +5,17 @@ import * as d3 from 'd3';
 const width = 600;
 const height = 400;
 
-function renderTreemap(svgRef,country) {
+function renderTreemap(svgRef, treemapData) {
   const svg = d3.select(svgRef.current);
 
   svg.attr('width', width).attr('height', height);
 
   var root = d3.stratify()
-    .id(function(d) { return d.child; })
-    .parentId(function(d) { return d.parent; }) 
-  (country);
-  root.sum(function(d) { return + d.value }) 
+    .id(function(d) { return d.name; })
+    .parentId(function(d) { return d.parent; })
+  (treemapData);
+  root.sum(function(d) { return + d.value })
 
-  /*const root = d3.hierarchy(data)
-    .sum((d) => d.Country)
-    .sort((a, b) => b.Country - a.Country);
-  */
   const treemapRoot = d3.treemap().size([width, height]).padding(1)(root);
 
   const nodes = svg
@@ -46,41 +42,47 @@ function renderTreemap(svgRef,country) {
     .attr('y', fontSize);
 }
 
+function filterData(query_country, data) {
+  let progLangStats = {}
+  let treemapData = [{"name": query_country, "parent": "", "value": ""}]  // init with root
+
+  data.map(row => {
+    if (row.Country === query_country) {
+      const languages = row.LanguageHaveWorkedWith.split(";");
+      languages.forEach(language => {
+        if (!progLangStats[language]) {
+          progLangStats[language] = 0
+        }
+        progLangStats[language] += 1
+      });
+    }
+  })
+
+  Object.keys(progLangStats).forEach(name => {
+    treemapData.push({"name": name, "parent": query_country, "value": progLangStats[name]})
+  });
+  const maxLength = 12
+  if (treemapData.length > maxLength) {
+    treemapData.length = maxLength
+  }
+  // console.log(progLangStats)
+  return treemapData
+}
+
 
 export default function Treemap({data}) {
   const svgRef = useRef(null);
+  const query_country = 'United States of America'
 
-  var country = []
-  var differtnProgLanguage = {}
+  if (data.length === 0) {
+    return <pre>Loading...</pre>;
+  }
+  const treemap_data = filterData(query_country, data)
+  renderTreemap(svgRef, treemap_data)
 
-  data.map(x => {
-    if(x.Country === "United States of America")
-    {
-      var languages = x.LanguageHaveWorkedWith.split(";")
-      languages.forEach(language => {
-        if(!differtnProgLanguage[language]) {
-          differtnProgLanguage[language] = 0
-        }
-          differtnProgLanguage[language] += 1
-      });  
-      var temp = [{"child": x.Country , "parent": "", "value" : "" }] 
-      Object.keys(differtnProgLanguage).forEach(name => {
-        temp.push({"child": name, "parent": x.Country, "value" : differtnProgLanguage[name]})
-      });
-      country = temp
-    }
-  })
-    console.log(country.length)
-    if (country.length === 0) {
-      return <pre>Loading...</pre>;  
-    }
-    else{
-      renderTreemap(svgRef,country)
-
-      return (
-        <div className="Down-Left-Treemap">
-          <h1>Treemap</h1>
-          <svg ref={svgRef} viewBox="0 0 450 400"></svg>
-        </div>)
-    }
+  return (
+    <div className="Down-Left-Treemap">
+      <h1>Treemap</h1>
+      <svg ref={svgRef} viewBox="0 0 450 400"></svg>
+    </div>)
 }
