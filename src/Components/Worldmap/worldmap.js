@@ -22,32 +22,45 @@ export default function Worldmap({geoJson,data}) {
     .on('zoom', handleZoom);
 
   useEffect(() => {
-
     const svgElement = d3.select(svgRef.current);
+
+    var Tooltip = d3.select('#asdf')
+      .append("span")
+      .style("opacity", 0)
+      .attr("class", "tooltip")
+      .style("background-color", "white")
+      .style("border", "solid")
+      .style("border-width", "2px")
+      .style("border-radius", "5px")
+      .style("padding", "5px")
+    var mouseover = function(d) {
+      Tooltip
+        .style("opacity", 1)
+    }
+    var mousemove = function(d) {
+      Tooltip
+        .html(d.originalTarget.id)
+        .st
+        .style("left", (d.x) + "px")
+        .style("top", (d.y) + "px")
+    }
+    var mouseleave = function(d) {
+      Tooltip
+        .style("opacity", 0)
+    }
+
     console.log(svgElement)
     svgElement.call(zoom);
     svgElement.selectAll('path')
       .each(function() {
-        svgElement.on('mouseover', function(event) {
-          //TODO fix printing
-          if(event.originalTarget.id === '')
-            return
-          else{
-            selectedCountry.innerHTML =  event.originalTarget.id ;
-            /*console.log( d3.select("#selectedCountry"))
-            d3.select("#selectedCountry").append('text')
-            .text(event.originalTarget.id)
-            .attr("x", 10)
-            .attr("y", 10);*/
-          }
+        svgElement
+          .on("mouseover", mouseover)
+          .on("mousemove", mousemove)
+          .on("mouseleave", mouseleave)
         })
-        .on('mouseout', function(event) {
-          selectedCountry.innerHTML = " ";
-         /* d3.select("text").style("visibility","hidden")*/
-          })
-        
+    // Three function that change the tooltip when user hover / move / leave a cell
 
-        })
+
     
     return () => {
       svgElement.on('.zoom', null);
@@ -66,9 +79,9 @@ export default function Worldmap({geoJson,data}) {
   }
 
   return (
-    <div className="Up-Worldmap">
+    <div className="Up-Worldmap" id={"asdf"}>
       <span id="selectedCountry"></span>
-      <svg ref={svgRef} viewBox="0 0 1200 500">
+      <svg ref={svgRef} id={'asdfg'} viewBox="0 0 1200 500">
         <g className="marks" ref={gref}>
           <path className="sphere" d={path({type: 'Sphere'}).attr} /* outline of the globe */ />
           {geoJson.countries.features.map(feature => (
