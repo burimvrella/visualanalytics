@@ -67,10 +67,8 @@ function filterData(query_country, data) {
     treemapData.length = maxLength
   }
   treemapData.push({"name": query_country, "parent": "", "value": ""})
-  console.log(treemapData)
   return treemapData
 }
-
 
 export default function Treemap({data}) {
   const svgRef = useRef(null);

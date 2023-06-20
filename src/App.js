@@ -25,7 +25,7 @@ function App() {
   return (
     <div className="App">
       <Settings data={data}/>
-      <Worldmap geoJson={geoJson}/>
+      <Worldmap geoJson={geoJson} data={data}/>
       <Treemap data={data}/>
       <Scatter data={data}/>
     </div>
