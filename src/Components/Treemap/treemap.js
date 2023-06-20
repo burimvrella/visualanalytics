@@ -44,7 +44,7 @@ function renderTreemap(svgRef, treemapData) {
 
 function filterData(query_country, data) {
   let progLangStats = {}
-  let treemapData = [{"name": query_country, "parent": "", "value": ""}]  // init with root
+  let treemapData = []  // init with root
 
   data.map(row => {
     if (row.Country === query_country) {
@@ -60,12 +60,14 @@ function filterData(query_country, data) {
 
   Object.keys(progLangStats).forEach(name => {
     treemapData.push({"name": name, "parent": query_country, "value": progLangStats[name]})
+    treemapData.sort((p1,p2) => (p1.value < p2.value) ? 1 : (p1.value > p2.value) ? -1 : 0)
   });
   const maxLength = 12
   if (treemapData.length > maxLength) {
     treemapData.length = maxLength
   }
-  // console.log(progLangStats)
+  treemapData.push({"name": query_country, "parent": "", "value": ""})
+  console.log(treemapData)
   return treemapData
 }
 
