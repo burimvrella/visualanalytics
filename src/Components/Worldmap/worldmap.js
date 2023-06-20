@@ -24,7 +24,7 @@ export default function Worldmap({geoJson,data}) {
   useEffect(() => {
     const svgElement = d3.select(svgRef.current);
 
-    var Tooltip = d3.select('#asdf')
+    var tooltip = d3.select('#world-map-div')
       .append("span")
       .style("opacity", 0)
       .attr("class", "tooltip")
@@ -33,19 +33,24 @@ export default function Worldmap({geoJson,data}) {
       .style("border-width", "2px")
       .style("border-radius", "5px")
       .style("padding", "5px")
-    var mouseover = function(d) {
-      Tooltip
+    const mouseover = function(event, d) {
+      tooltip
         .style("opacity", 1)
     }
-    var mousemove = function(d) {
-      Tooltip
-        .html(d.originalTarget.id)
-        .st
-        .style("left", (d.x) + "px")
-        .style("top", (d.y) + "px")
+
+    const mousemove = function(event, d) {
+      tooltip
+        .html(event.originalTarget.id)
+        .style("left", (event.x)/2 + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
+        .style("top", (event.y)/2 + "px")
+        .transition()
     }
-    var mouseleave = function(d) {
-      Tooltip
+
+    // A function that change this tooltip when the leaves a point: just need to set opacity to 0 again
+    const mouseleave = function(event,d) {
+      tooltip
+        .transition()
+        .duration(200)
         .style("opacity", 0)
     }
 
@@ -79,7 +84,7 @@ export default function Worldmap({geoJson,data}) {
   }
 
   return (
-    <div className="Up-Worldmap" id={"asdf"}>
+    <div className="Up-Worldmap" id={"world-map-div"}>
       <span id="selectedCountry"></span>
       <svg ref={svgRef} id={'asdfg'} viewBox="0 0 1200 500">
         <g className="marks" ref={gref}>
