@@ -1,6 +1,7 @@
 import {useEffect, useRef} from 'react'
 import * as d3 from 'd3'
 import './worldmap.css'
+import {colorCoding} from './colorCoding'
 
 const projection = d3.geoNaturalEarth1();
 const path = d3.geoPath(projection);
@@ -12,7 +13,6 @@ export default function Worldmap({geoJson, data}) {
   const svgRef = useRef();
   const gRef = useRef();
   const divRef = useRef();
-  var selectedCountry = document.getElementById("selectedCountry");
   const handleZoom = ({transform}) => {
     gRef.current.setAttribute('transform', transform.toString());
   };
@@ -25,7 +25,7 @@ export default function Worldmap({geoJson, data}) {
   useEffect(() => {
     const svgElement = d3.select(svgRef.current);
 
-    var tooltip = d3.select(divRef.current) // d3.select('#world-map-div')
+    var tooltip = d3.select(divRef.current)
       .append("span")
       .style("opacity", 0)
       .attr("class", "tooltip")
@@ -65,7 +65,7 @@ export default function Worldmap({geoJson, data}) {
           .on("mousemove", mousemove)
           .on("mouseleave", mouseleave)
       })
-    
+
     return () => {
       svgElement.on('.zoom', null);
     };
@@ -74,17 +74,37 @@ export default function Worldmap({geoJson, data}) {
   if (!data || !geoJson) {
     return <pre>Loading...</pre>;
   }
-    var max = Math.max(...data.map(o => o.CompYearEur))
-    var min = Math.min(...data.map(o => o.CompYearEur))
+
+  const [min, max, countryStats] = colorCoding(data)
+  const colorScale = d3.scaleSequential(d3.interpolatePuBuGn).domain([min, max]);
+
+  // ToDo: geoJson and survey country names include different notation
+  // Object.keys(countryStats).forEach(key => {
+  //   console.log(key + ": " + colorScale(countryStats[key]))
+  // });
+//  console.log(Object.keys(countryStats))
+//  let geosjonCountries = new Map();
+//  geoJson.countries.features.map(feature => (
+//    geosjonCountries[feature.properties.name] = 1
+//  ));
+//  let diffCountries = []
+//  Object.keys(countryStats).forEach(key => {
+//    if (!geosjonCountries.has(key)) {
+//      diffCountries.push(key)
+//    }
+//  });
+//  console.log(diffCountries)
 
   return (
-    <div ref={divRef} className="Up-Worldmap" id={"world-map-div"}>
+    <div ref={divRef} className="Up-Worldmap" >
       <span id="selectedCountry"></span>
       <svg ref={svgRef} viewBox="0 0 1200 500">
         <g className="marks" ref={gRef}>
           <path className="sphere" d={path({type: 'Sphere'}).attr} /* outline of the globe */ />
           {geoJson.countries.features.map(feature => (
-            <path className="country" id={feature.properties.name} d={path(feature)}/>
+            <path className="country" id={feature.properties.name} d={path(feature)} fill={
+              colorScale(countryStats[feature.properties.name])
+            } />
           ))}
           <path className="interiors" d={path(geoJson.interiors)}/>
         </g>
