@@ -79,20 +79,17 @@ export default function Worldmap({geoJson, data}) {
   const colorScale = d3.scaleSequential(d3.interpolatePuBuGn).domain([min, max]);
 
   // ToDo: geoJson and survey country names include different notation
-  // Object.keys(countryStats).forEach(key => {
-  //   console.log(key + ": " + colorScale(countryStats[key]))
-  // });
-//  console.log(Object.keys(countryStats))
-//  let geosjonCountries = new Map();
+//  let geosJsonCountries = new Map();
 //  geoJson.countries.features.map(feature => (
-//    geosjonCountries[feature.properties.name] = 1
+//    geosJsonCountries.set(feature.properties.name, 1)
 //  ));
 //  let diffCountries = []
 //  Object.keys(countryStats).forEach(key => {
-//    if (!geosjonCountries.has(key)) {
+//    if (!geosJsonCountries.has(key)) {
 //      diffCountries.push(key)
 //    }
 //  });
+//  console.log(geosJsonCountries)
 //  console.log(diffCountries)
 
   return (
