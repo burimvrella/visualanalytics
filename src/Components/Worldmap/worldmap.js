@@ -82,7 +82,6 @@ export default function Worldmap({geoJson, data}) {
 
   const [min, max, countryStats] = colorCoding(data)
   const colorScale = d3.scaleSequential(d3.interpolateBlues).domain([min, max]);
-  console.log(data)
 
   // ToDo: geoJson and survey country names include different notation
 //  let geosJsonCountries = new Map();
