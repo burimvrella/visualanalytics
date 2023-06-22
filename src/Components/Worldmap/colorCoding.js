@@ -35,6 +35,33 @@ function calcAverageEdLevel(data) {
   return [min, max, countryStats];
 }
 
+function calcAverageCompensation(data) {
+  let countryStats = {}
+
+  data.map(row => {
+    if (!countryStats[row.Country]) {
+      countryStats[row.Country] = [];
+    }
+    countryStats[row.Country].push(row.CompYearEur);
+  })
+  //console.log(countryStats['Germany'])
+  let min = 1000000;
+  let max = 0;
+  Object.keys(countryStats).forEach(key => {
+    let avg = calcMean(countryStats[key]);
+    let len = countryStats[key];
+    countryStats[key] = [(avg)];
+    if (avg < min) {
+      min = avg;
+    }
+    if (avg > max) {
+      max = avg;
+    }
+    console.log("Average Edlevel of " + key + " = " + avg + " len: " + len);
+  });
+  return [min, max, countryStats];
+}
+
 export const colorCoding = (data) => {
   if (!data) {
     return null
