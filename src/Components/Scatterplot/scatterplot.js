@@ -3,18 +3,13 @@ import './scatterplot.css'
 import * as d3 from 'd3';
 import SettingsContext from '../Settings/settingscontext';
 
-export default function Scatterplot(props) {
 
-  const settingsContext = useContext(SettingsContext);
+function drawScatterplot(data,xAxisName,yAxisName,svgRef){
+  const width = 490;
+  const height = 390;
+  //console.log(yAxisName, xAxisName)
 
-  //console.log(settingsContext.age)
-  //console.log(props.data.length)
-  const svgRef = useRef();
-
-  useEffect(() => {
-    const width = 490;
-    const height = 390;
-    const svg = d3.select(svgRef.current)
+  const svg = d3.select(svgRef.current)
                   .attr('width', width)
                   .attr('height', height)
                   .style('overflow','visible')
@@ -23,11 +18,11 @@ export default function Scatterplot(props) {
 
 
     const xScale = d3.scalePoint()
-                    .domain(props.data.map(function(d) { return d.Country; }))
+                    .domain(data.map(function(d) { return d[xAxisName]; }))
                     .range([0,width]);
 
     const yScale = d3.scalePoint()
-                    .domain(props.data.map(function(d) { return d.Employment; }))
+                    .domain(data.map(function(d) { return d[yAxisName]; }))
                     .range([height,0]);
 
     const xAxis = d3.axisBottom(xScale);
@@ -69,7 +64,7 @@ export default function Scatterplot(props) {
 
         
     svg.selectAll()
-        .data(props.data)
+        .data(data)
         .enter()
         .append('circle')
         .attr('cx', d => xScale(d.Country))
@@ -92,7 +87,22 @@ export default function Scatterplot(props) {
             .duration(50)
             .attr('r', 2)
             .attr('fill', '#000000');
-        });  
+        });
+  
+}
+
+export default function Scatterplot(props) {
+
+  const settingsContext = useContext(SettingsContext);
+
+  //console.log(settingsContext.age)
+  const svgRef = useRef();
+
+
+  useEffect(() => {
+
+    
+    drawScatterplot(props.data,props.data.Country,props.data.Employment,svgRef)
 
   },[props.data]);
 

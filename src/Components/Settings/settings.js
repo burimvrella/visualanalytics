@@ -1,81 +1,69 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Dropdown from './dropdown.js';
 import './settings.css';
 
+
 export default function Settings(props) { 
+  let dropdownaxis = [];
+  let dropdownCountry = [];
+  let dropdownProgLanguage = [];
+  let dropdownHeatmap = [];
+  
 
-  const [age, setAge] = useState("");
-  const [income, setIncome] = useState(1);
+  const [xAxis, setxAxis] = useState("");
+  const [yAxis, setyAxis] = useState("");
 
-  const expierence = [
-    { id: 'Trainee', value: 'Trainee developer' },
-    { id: 'Junior', value: 'Junior developer' },
-    { id: 'Mid-level', value: 'Mid-level developer' },
-    { id: 'Senior', value: 'Senior developer' },
-  ];
+  const [incomefrom, setIncomeFrom] = useState(0);
+  const [incometo, setIncometo] = useState(0);
 
-  const gender = [
-    { id: 'Male', value: 'Male' },
-    { id: 'Female', value: 'Female' },
-  ];
+  const [country, setCountry] = useState("")
+  const [programmingLanguage, setProgrammingLanguage] = useState("")
+  const [heatmap, setHeatmap] = useState("")
 
-  const country = [
-    { id: 'Austria', value: 'Austria' },
-    { id: 'Cape Verde', value: 'Cape Verde' },
-    { id: 'Germany', value: 'Germany' },
-  ];
-
-  const Axis = [
-    { id: 'Income', value: 'Income' },
-    { id: 'Country', value: 'Country' },
-  ];
+  const data = props.data
 
 
-  const handleNummericInput = (e) => {
-    const regex = /^[0-9\b]+$/;
-    if ((e.target.value === "" || regex.test(e.target.value)) && (e.target.value < 100)) {
-      setAge(e.target.value);
-    }
-  };
+  if (!data) {
+    return (<pre>Loading...</pre>)
+  }
+  else{
 
-  const handleIncomeInput = (e) => {
-    setIncome(e.target.value);
-  };
- 
-  return (
-    <div className='Settings'>
-      <h1>Select Settings</h1>
+    const handleIncomeInput = (input) => {
+      
+      const regex = /^[0-9\b]+$/;
+      if ((input.target.value === "" || regex.test(input.target.value)) && (input.target.value < 100)) {
+      //TODO 
+      }
+    }; 
 
-      <div className='gensettings'>
-      <h2>General Settings</h2>
-      <Dropdown data={expierence} lable={'Expierence Level'} />
-      <Dropdown data={gender} lable={'Choose Gender'} />
-      <label> {'Enter you age: '}
-        <input id='age' type="text" value={age} onChange={handleNummericInput} />
-      </label>
-      </div>
+    console.log(data)
+    console.log(data.columns)
+    /*(data.columns).forEach(column => {
+      dropdownaxis.push({ id: column, value: column })   
+    });*/
 
-      <div className='wordsettings'>
-      <h2>Worldmap Settings</h2>
+    return (
+      <div className='Settings'>
+        <h1>Select Settings</h1>
+        
+        <div><Dropdown data={dropdownCountry} lable={'Choosen Country: '} onChange={" "}/></div>
+        <div><Dropdown data={dropdownProgLanguage} lable={'Choosen Programming Language: '} onChange={" "}/></div>
+        <div><Dropdown data={dropdownHeatmap} lable={'Choosen Heatmap Visualisation: '} onChange={" "}/></div>
+
         <label> {'Choose Income: '} </label>
-        <div>
-          <input id='income' type="range" min='0' max='150000' step='100' value={income} onChange={handleIncomeInput} />
-          <output id='incomelable'>{income} $</output>
+          <div>
+            <input id='income' type="range" min='0' max='150000' step='100' value={incomefrom} onChange={handleIncomeInput} />
+            <output id='incomelable'>{incomefrom} $</output>
+          </div>
+  
+        <div className='scattersettings'>
+        <h2>Scatterplot Settings</h2>
+        <Dropdown data={dropdownaxis} lable={'Choose X-Axes'} />
+        <Dropdown data={dropdownaxis} lable={'Choose Y-Axes'} />
         </div>
+  
       </div>
-
-      <div className='treesettings'>
-      <h2>Treemap Settings</h2>
-      <Dropdown data={country} lable={'Choosen Country'} />
-      </div>
-
-      <div className='scattersettings'>
-      <h2>Scatterplot Settings</h2>
-      <Dropdown data={Axis} lable={'Choose X-Axes'} />
-      <Dropdown data={Axis} lable={'Choose Y-Axes'} />
-      </div>
-
-    </div>
-  )
+    )
+  }
 }
 

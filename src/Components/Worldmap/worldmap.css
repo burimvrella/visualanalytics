@@ -12,9 +12,6 @@
 pre {
   font-size: large;
 }
-.marks .country {
-  fill: rgba(19, 68, 16, 0.46)
-}
 .marks .sphere {
   fill: #74A8F85E
 }
@@ -28,6 +25,10 @@ pre {
 }
 
 .country:hover {
+  fill: red;
+}
+
+#selectedCountry{
   fill: red;
 }
 
