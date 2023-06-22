@@ -14,6 +14,7 @@ export default function Worldmap({geoJson, data}) {
   const gRef = useRef();
   const divRef = useRef();
   let selectedCountry, selectedCountryColor = null;
+  let countryStats = null;
   const handleZoom = ({transform}) => {
     gRef.current.setAttribute('transform', transform.toString());
   };
@@ -42,7 +43,7 @@ export default function Worldmap({geoJson, data}) {
     const mousemove = function (event, d) {
       if (event.originalTarget.id) {
         tooltip
-          .html(event.originalTarget.id)
+          .html(event.originalTarget.id + "<br/>" +  Number(countryStats[event.originalTarget.id]).toFixed(2))
           .style("left", (event.x + 10) + "px")
           .style("top", (event.y + 10) + "px")
           .style('position', 'absolute')
@@ -80,7 +81,9 @@ export default function Worldmap({geoJson, data}) {
       </div>
     )}
 
-  const [min, max, countryStats] = colorCoding(data)
+  let min = 0;
+  let max = 0;
+  [min, max, countryStats] = colorCoding(data)
   const colorScale = d3.scaleSequential(d3.interpolateBlues).domain([min, max]);
 
   // ToDo: geoJson and survey country names include different notation
