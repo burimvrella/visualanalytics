@@ -16,39 +16,93 @@ export default function Settings(props) {
   const [incomefrom, setIncomeFrom] = useState(0);
   const [incometo, setIncometo] = useState(0);
 
-  const [country, setCountry] = useState("")
+  const [country, setCountry] = useState("United Kingdome");
   const [programmingLanguage, setProgrammingLanguage] = useState("")
   const [heatmap, setHeatmap] = useState("")
-
+  
   const data = props.data
 
 
-  if (!data) {
-    return (<pre>Loading...</pre>)
+  useEffect(() => {
+    setCountry(country);
+  }, [country]);
+
+  if (data.length === 0) {
+    return (
+    <div className='Settings'>
+      <h1>Select Settings</h1>
+       <pre>Loading...</pre>
+       </div>
+       )
   }
   else{
 
     const handleIncomeInput = (input) => {
-      
       const regex = /^[0-9\b]+$/;
       if ((input.target.value === "" || regex.test(input.target.value)) && (input.target.value < 100)) {
       //TODO 
       }
     }; 
+ 
+    const handleDropdownProgLang = (event) => {
+      setProgrammingLanguage(event.target.value);
+    };
 
-    console.log(data)
-    console.log(data.columns)
-    /*(data.columns).forEach(column => {
-      dropdownaxis.push({ id: column, value: column })   
-    });*/
+    const handleDropdownHeatmap = (event) => {
+      setHeatmap(event.target.value);
+    };
+ 
+    let columns = data.columns
+    let countrys = []
+
+    data.forEach(row => {
+      countrys.push(row.Country)
+    })
+
+    countrys = [...new Set(countrys)]
+    
+    countrys.forEach(lable => {
+      dropdownCountry.push({ id: lable, value: lable })   
+    });
+  
+
+    columns.forEach(lable => {
+      dropdownaxis.push({ id: lable, value: lable })   
+    });
 
     return (
       <div className='Settings'>
         <h1>Select Settings</h1>
-        
-        <div><Dropdown data={dropdownCountry} lable={'Choosen Country: '} onChange={" "}/></div>
-        <div><Dropdown data={dropdownProgLanguage} lable={'Choosen Programming Language: '} onChange={" "}/></div>
-        <div><Dropdown data={dropdownHeatmap} lable={'Choosen Heatmap Visualisation: '} onChange={" "}/></div>
+
+        <div className='Dropdown'>
+        <label>{'Choosen Country'}: </label>
+        <select id='select' onChange={e  => {
+          console.log(country)
+          setCountry(e.currentTarget.value)}}>
+          {dropdownCountry.map((option) => (
+              <option key={option.id} value={option.value}>{option.id}</option>
+            ))}
+        </select>
+        </div>
+
+        <div className='Dropdown'>
+        <label>{'Choosen Programming Language'}: </label>
+          <select id='select' value={country} onChange={handleDropdownProgLang} >
+            {dropdownProgLanguage.map((option) => (
+              <option key={option.id} value={option.value}>{option.id}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className='Dropdown'>
+        <label>{'Choosen Heatmap Visualisation'}: </label>
+          <select id='select' value={heatmap} onChange={handleDropdownHeatmap} >
+            {dropdownHeatmap.map((option) => (
+              <option key={option.id} value={option.value}>{option.id}</option>
+            ))}
+          </select>
+        </div>
+
 
         <label> {'Choose Income: '} </label>
           <div>
