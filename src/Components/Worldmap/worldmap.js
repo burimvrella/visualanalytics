@@ -110,6 +110,14 @@ export default function Worldmap({geoJson, data}) {
   let min = 0;
   let max = 0;
   [min, max, countryStats] = colorCoding(data)
+  if (!countryStats) {
+    return (
+      <div className="Up-Worldmap" >
+        <h1>Worldmap</h1>
+        <pre>Loading...</pre>
+      </div>
+    )}
+  // colorCoding(data)
   const colorScale = d3.scaleSequential(d3.interpolateBlues).domain([min, max]);
 
   const mouseclick = function (event, d) {
