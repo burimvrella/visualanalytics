@@ -7,7 +7,7 @@ import Scatter from './Components/Scatterplot/scatterplot.js';
 import {useData} from './Components/Worldmap/useData.js';
 import SettingsContext from './Components/Settings/settingscontext';
 import * as d3 from 'd3';
-import surveydata from './data/surveydata_v4.csv';
+import surveydata from './data/surveydata_v5.csv';
 
 function App() {
   const [data, setData] = useState([]);

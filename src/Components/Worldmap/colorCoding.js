@@ -1,3 +1,5 @@
+import {convertNameToId} from './worldmap'
+
 function calcMean(array) {
   let sum = 0;
   for( let i = 0; i < array.length; i++ ){
@@ -8,14 +10,16 @@ function calcMean(array) {
   }
   return sum/array.length;
 }
+
 function calcAverageEdLevel(data) {
   let countryStats = {}
 
   data.map(row => {
-    if (!countryStats[row.Country]) {
-      countryStats[row.Country] = [];
+    let countryId = convertNameToId(row.Country)
+    if (!countryStats[countryId]) {
+      countryStats[countryId] = [];
     }
-    countryStats[row.Country].push(row.EdLevel);
+    countryStats[countryId].push(row.EdLevel);
   })
   //console.log(countryStats['Germany'])
   let min = 1000000;
@@ -39,10 +43,12 @@ function calcAverageCompensation(data) {
   let countryStats = {}
 
   data.map(row => {
-    if (!countryStats[row.Country]) {
-      countryStats[row.Country] = [];
+    let countryId = convertNameToId(row.Country)
+
+    if (!countryStats[countryId]) {
+      countryStats[countryId] = [];
     }
-    countryStats[row.Country].push(row.CompYearEur);
+    countryStats[countryId].push(row.CompYearEur);
   })
   //console.log(countryStats['Germany'])
   let min = 1000000;
@@ -57,16 +63,45 @@ function calcAverageCompensation(data) {
     if (avg > max) {
       max = avg;
     }
-    console.log("Average Edlevel of " + key + " = " + avg + " len: " + len);
+    console.log("Average Compensation of " + key + " = " + avg + " len: " + len);
   });
+  return [min, max, countryStats];
+}
+
+function calcNumberOfProgrammers(data) {
+  let countryStats = {}
+
+  data.map(row => {
+    let countryId = convertNameToId(row.Country)
+
+    if (!countryStats[countryId]) {
+      countryStats[countryId] = 0;
+    }
+    countryStats[countryId] += 1;
+  })
+
+   let min = 1000000;
+   let max = 0;
+  Object.keys(countryStats).forEach(key => {
+    let numProgrammers = countryStats[key]
+    if (numProgrammers < min) {
+       min = numProgrammers;
+     }
+     if (numProgrammers > max) {
+       max = numProgrammers;
+     }
+     // console.log("#Programmers of " + key + " = " + numProgrammers);
+   });
   return [min, max, countryStats];
 }
 
 export const colorCoding = (data) => {
   if (!data) {
-    return null
+    return [0, 0, null]
   }
-  const [min, max, countrystats] = calcAverageEdLevel(data)
-  //console.log(min + " | " + max + " | " + countrystats)
+  //[min, max, countrystats] = calcAverageEdLevel(data)
+  const [min, max, countrystats] = calcNumberOfProgrammers(data)
+  // console.log(min + " | " + max + " | ")
+  // console.log(countrystats)
   return [min, max, countrystats]
 }
