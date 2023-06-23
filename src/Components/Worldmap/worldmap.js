@@ -13,6 +13,8 @@ export default function Worldmap({geoJson, data}) {
   const svgRef = useRef();
   const gRef = useRef();
   const divRef = useRef();
+  let selectedCountry, selectedCountryColor = null;
+  let countryStats = null;
   const handleZoom = ({transform}) => {
     gRef.current.setAttribute('transform', transform.toString());
   };
@@ -41,7 +43,7 @@ export default function Worldmap({geoJson, data}) {
     const mousemove = function (event, d) {
       if (event.originalTarget.id) {
         tooltip
-          .html(event.originalTarget.id)
+          .html(event.originalTarget.id + "<br/>" +  Number(countryStats[event.originalTarget.id]).toFixed(2))
           .style("left", (event.x + 10) + "px")
           .style("top", (event.y + 10) + "px")
           .style('position', 'absolute')
@@ -72,11 +74,17 @@ export default function Worldmap({geoJson, data}) {
   });
 
   if (!data || !geoJson) {
-    return <pre>Loading...</pre>;
-  }
+    return (
+      <div className="Up-Worldmap" >
+        <h1>Worldmap</h1>
+        <pre>Loading...</pre>
+      </div>
+    )}
 
-  const [min, max, countryStats] = colorCoding(data)
-  const colorScale = d3.scaleSequential(d3.interpolatePuBuGn).domain([min, max]);
+  let min = 0;
+  let max = 0;
+  [min, max, countryStats] = colorCoding(data)
+  const colorScale = d3.scaleSequential(d3.interpolateBlues).domain([min, max]);
 
   // ToDo: geoJson and survey country names include different notation
 //  let geosJsonCountries = new Map();
@@ -92,6 +100,19 @@ export default function Worldmap({geoJson, data}) {
 //  console.log(geosJsonCountries)
 //  console.log(diffCountries)
 
+  const mouseclick = function (event, d) {
+    // console.log(event)
+    // console.log(event.target.id)
+    if (selectedCountry){
+      d3.select(selectedCountry).style('fill', selectedCountryColor)
+      selectedCountry = null;
+    }
+    selectedCountry = event.target;
+    selectedCountryColor = event.target.fill
+    d3.select(event.target).style('fill', 'red')
+    return event.target
+  }
+
   return (
     <div ref={divRef} className="Up-Worldmap" >
       <span id="selectedCountry"></span>
@@ -101,7 +122,7 @@ export default function Worldmap({geoJson, data}) {
           {geoJson.countries.features.map(feature => (
             <path className="country" id={feature.properties.name} d={path(feature)} fill={
               colorScale(countryStats[feature.properties.name])
-            } />
+            } onClick={mouseclick} />
           ))}
           <path className="interiors" d={path(geoJson.interiors)}/>
         </g>

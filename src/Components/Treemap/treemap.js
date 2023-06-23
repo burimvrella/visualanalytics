@@ -43,17 +43,23 @@ function renderTreemap(svgRef, treemapData) {
 }
 
 function filterData(query_country, data) {
-  let progLangStats = {}
-  let treemapData = []  // init with root
+  let progLangStats = {};
+  let treemapData = [];
+  let progLanguages = [];
+
+  data.columns.forEach(column => {
+    if (column.includes("#")) {
+      progLanguages.push(column)
+      progLangStats[column] = 0
+    }
+  })
 
   data.map(row => {
     if (row.Country === query_country) {
-      const languages = row.LanguageHaveWorkedWith.split(";");
-      languages.forEach(language => {
-        if (!progLangStats[language]) {
-          progLangStats[language] = 0
+      progLanguages.forEach(language => {
+        if (row[language] === '1') {
+          progLangStats[language] += 1
         }
-        progLangStats[language] += 1
       });
     }
   })
