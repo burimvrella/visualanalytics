@@ -39,13 +39,45 @@ output#incomelable{
   width: 30%;
 }
 
+
+
 .Dropdown select{
   font-family: Verdana, Geneva, Tahoma, sans-serif;
-  width: 10em;
-  margin-bottom: 5px;
+  width: 80%;
+  height: 30px;
+  margin-bottom: 10px;
+  margin-left: 20px;
+  margin-top: 10px;
 }
 
 .Dropdown label{
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-size: 15px;
 }
+
+.slider{
+  width: 80%;
+  height: 5px;
+  margin-left: 20px;
+  margin-top: 10px;
+  background-color: #6a97e6;
+  margin-bottom: 10px;
+}
+
+.slider .thumb {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  background: #fff;
+  border-radius: 50%;
+  border: 2px solid #275efe;
+  top: -7px;
+}
+
+small{
+  margin-left: 20px;
+}
+
+.values{
+  margin-left: 20px;
+}  

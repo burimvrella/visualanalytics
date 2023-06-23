@@ -48,6 +48,10 @@ export default function Worldmap({geoJson, data}) {
       d3.select('#' + countryId).style('fill', 'orange')
     }
 
+    console.log(infoSettings.income)
+    console.log(infoSettings.heatmap)
+    console.log(infoSettings.programmingLanguage)
+
   },[infoSettings])
 
   useEffect(() => {
