@@ -11,7 +11,7 @@ import surveydata from './data/surveydata_v5.csv';
 
 function App() {
   const [data, setData] = useState([]);
-  const [country, setCountry] = useState();
+  const [country, setCountry] = useState("");
   const [xAxis, setxAxis] = useState("");
   const [yAxis, setyAxis] = useState("");
 

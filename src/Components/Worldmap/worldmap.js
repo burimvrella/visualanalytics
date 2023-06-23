@@ -10,6 +10,8 @@ const path = d3.geoPath(projection);
 const width = 1200;
 const height = 500;
 var infoSettings = null;
+let selectedCountryId = '';
+let selectedCountryColor = '';
 
 export function convertNameToId(name) {
   let id = name.replace(/ /g, '_');
@@ -24,14 +26,29 @@ function convertIdToName(name) {
   return id;
 }
 
+function handleCountrySelection(countryId) {
+  let selCountry = d3.select('#' + countryId)
+  selCountry.style('fill', 'orange')
+
+  // unselect item
+  if (selectedCountryId !== '') {
+    let prevSelCountry = d3.select('#' + selectedCountryId)
+    prevSelCountry.style('fill', selectedCountryColor)
+  }
+
+  // save country selection
+  selectedCountryId = countryId
+  selectedCountryColor = selCountry.attr("fill")
+  // console.log('selected countryId: ' + selectedCountryId + 'fill: ' + selectedCountryColor)
+}
+
 export default function Worldmap({geoJson, data}) {
   const svgRef = useRef();
   const gRef = useRef();
   const divRef = useRef();
 
   infoSettings = useContext(SettingsContext);
-  
-  let selectedCountry, selectedCountryColor = null;
+
   let countryStats = null;
   const handleZoom = ({transform}) => {
     gRef.current.setAttribute('transform', transform.toString());
@@ -43,15 +60,10 @@ export default function Worldmap({geoJson, data}) {
     .on('zoom', handleZoom);
 
   useEffect(() => {
-    console.log('Chosen country:' + infoSettings.country)
-    if (infoSettings.country) {
-      let countryId = convertNameToId(infoSettings.country)
-      d3.select('#' + countryId).style('fill', 'orange')
+    // console.log('Chosen country:' + infoSettings.country)
+    if (infoSettings.country !== "") {
+      handleCountrySelection(convertNameToId(infoSettings.country))
     }
-
-    console.log(infoSettings.income)
-    console.log(infoSettings.heatmap)
-    console.log(infoSettings.programmingLanguage)
 
   },[infoSettings])
 
@@ -126,19 +138,7 @@ export default function Worldmap({geoJson, data}) {
   const colorScale = d3.scaleSequential(d3.interpolateBlues).domain([min, max]);
 
   const mouseclick = function (event, d) {
-    // console.log(event)
-    // console.log(event.target.id)
-    if (selectedCountry){
-      console.log('del country')
-      d3.select(selectedCountry).style('fill', selectedCountryColor)
-      selectedCountry = null;
-    }
-    console.log('set country')
-    selectedCountry = event.target;
-    infoSettings.setCountry(convertIdToName(selectedCountry.id));
-    selectedCountryColor = event.target.fill
-    d3.select(event.target).style('fill', 'red')
-    return event.target
+    handleCountrySelection(event.target.id)
   }
 
   return (
