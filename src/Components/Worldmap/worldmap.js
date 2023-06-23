@@ -31,6 +31,7 @@ export default function Worldmap({geoJson, data}) {
   useEffect(() => {
 
       console.log(infoSettings.country)
+      console.log(infoSettings.income)
 
   },[infoSettings])
 

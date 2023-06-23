@@ -1,5 +1,6 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import Dropdown from './dropdown.js';
+import Slider from 'react-slider';
 import './settings.css';
 import SettingsContext from '../Settings/settingscontext';
 
@@ -10,8 +11,14 @@ export default function Settings(props) {
   let dropdownaxis = [];
   let dropdownCountry = [];
   let dropdownProgLanguage = [];
-  let dropdownHeatmap = [];
+  let dropdownHeatmap = [{ id: 'EdLevel per Country', value: 'EdLevelCountry' },{ id: 'Yearly Compenstation per Country', value: 'CompYearCountry' },{ id: 'Numbers of Programmers per Country', value: 'NumProgCountry' }];
+  let min = 0
+  let max = 2500
+  var timeout;
+
   var infoSettings = useContext(SettingsContext);
+  const [incomes, setIncomes] = useState([min,max]);
+  
   
   const data = props.data
 
@@ -24,13 +31,11 @@ export default function Settings(props) {
          )
     }
     else{
-
-      const handleIncomeInput = (input) => {
-        const regex = /^[0-9\b]+$/;
-        if ((input.target.value === "" || regex.test(input.target.value)) && (input.target.value < 100)) {
-        //TODO 
-        }
-      }; 
+      
+      let columns = data.columns
+      let countrys = []
+      let incomeYearly = []
+ 
    
       const handleDropdownProgLang = (event) => {
         infoSettings.setProgrammingLanguage(event.target.value);
@@ -42,25 +47,40 @@ export default function Settings(props) {
 
       const handleDropdownCountry = (event) => {
         infoSettings.setCountry(event.target.value);
-        console.log(infoSettings.country)
       };
-   
-      let columns = data.columns
-      let countrys = []
-  
+      
+      function handleIncome(value) {
+        setIncomes([value[0],value[1]])
+      };
+
+      function handleIncomeOnCommitted(value) {
+      timeout && clearTimeout(timeout);
+      timeout = setTimeout(() => {
+      console.log('change');
+      infoSettings.setIncome([value[0],value[1]]); 
+    }, 5000);};
+
+
       data.forEach(row => {
         countrys.push(row.Country)
+        incomeYearly.push(row.CompYearEur)
       })
-  
+
+      //max = Math.max(...incomeYearly)
+      //min = Math.min(...incomeYearly)
+      
       countrys = [...new Set(countrys)]
       
       countrys.forEach(lable => {
         dropdownCountry.push({ id: lable, value: lable })   
       });
-    
-  
+
       columns.forEach(lable => {
-        dropdownaxis.push({ id: lable, value: lable })   
+        if (!lable.includes("#")) {
+          dropdownaxis.push({ id: lable, value: lable })   
+        } else {
+          dropdownProgLanguage.push({ id: lable, value: lable })
+        }
       });
   
       return (
@@ -69,7 +89,7 @@ export default function Settings(props) {
           <h1>Select Settings</h1>
 
           <div className='Dropdown'>
-          <label>{'Choosen Country'}: </label>
+          <label>{'Choosen Country'}:  </label><br/>
           <select id='select' value={infoSettings.country} onChange={handleDropdownCountry}>
             {dropdownCountry.map((option) => (
                 <option key={option.id} value={option.value}>{option.id}</option>
@@ -78,8 +98,8 @@ export default function Settings(props) {
           </div>
   
           <div className='Dropdown'>
-          <label>{'Choosen Programming Language'}: </label>
-            <select id='select' value={infoSettings.country} onChange={handleDropdownProgLang} >
+          <label>{'Choosen Programming Language'}: </label><br/>
+            <select id='select' value={infoSettings.programmingLanguage} onChange={handleDropdownProgLang} >
               {dropdownProgLanguage.map((option) => (
                 <option key={option.id} value={option.value}>{option.id}</option>
               ))}
@@ -87,7 +107,7 @@ export default function Settings(props) {
           </div>
   
           <div className='Dropdown'>
-          <label>{'Choosen Heatmap Visualisation'}: </label>
+          <label>{'Choosen Heatmap Visualisation'}: </label><br/>
             <select id='select' value={infoSettings.heatmap} onChange={handleDropdownHeatmap} >
               {dropdownHeatmap.map((option) => (
                 <option key={option.id} value={option.value}>{option.id}</option>
@@ -96,12 +116,19 @@ export default function Settings(props) {
           </div>
   
   
-          <label> {'Choose Income: '} </label>
-            <div>
-              <input id='income' type="range" min='0' max='150000' step='100' value={infoSettings.income} onChange={handleIncomeInput} />
-              <output id='incomelable'>{infoSettings.income} $</output>
-            </div>
-    
+          <label> {'Choose Yearly Income: '} </label>
+            <Slider className='slider' 
+              onChange={(e) => {
+                handleIncome(e)
+                handleIncomeOnCommitted(e)
+              }}
+              value={incomes}
+              min={min}
+              max={max}
+            />
+          <div className='values'>{incomes[0]}€ - {incomes[1]}€</div>  
+          <small>Current Range: {incomes[1] - incomes[0]}€</small>
+
           <div className='scattersettings'>
           <h2>Scatterplot Settings</h2>
           <Dropdown data={dropdownaxis} lable={'Choose X-Axes'} />
@@ -111,7 +138,6 @@ export default function Settings(props) {
         </div>
       )
     }
-
-  
 }
+
 
