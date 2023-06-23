@@ -82,12 +82,15 @@ function filterData(query_country, data) {
 export default function Treemap({data}) {
   const infoSettings = useContext(SettingsContext);
   const svgRef = useRef(null);
-  const query_country = 'United States of America'
+  let query_country = 'United States of America'
+  let treemap_data = '';
 
   useEffect(() => {
     // console.log('Chosen country:' + infoSettings.country)
     if (infoSettings.country !== "") {
-      console.log(infoSettings.country)
+      query_country = infoSettings.country;
+      treemap_data = filterData(query_country, data)
+      renderTreemap(svgRef, treemap_data)
     }
 
   },[infoSettings])
@@ -95,7 +98,7 @@ export default function Treemap({data}) {
   if (data.length === 0) {
     return <pre>Loading...</pre>;
   }
-  const treemap_data = filterData(query_country, data)
+  treemap_data = filterData(query_country, data)
   renderTreemap(svgRef, treemap_data)
 
   return (
