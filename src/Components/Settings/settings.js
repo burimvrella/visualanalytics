@@ -46,7 +46,7 @@ export default function Settings(props) {
       };
 
       const handleDropdownCountry = (event) => {
-        infoSettings.setCountry(event.target.value);
+        infoSettings.setCountry(event.target.value.replace(/\./g, ''));
       };
       
       function handleIncome(value) {

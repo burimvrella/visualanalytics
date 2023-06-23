@@ -9,6 +9,7 @@ const path = d3.geoPath(projection);
 //const graticule = d3.geoGraticule();
 const width = 1200;
 const height = 500;
+var infoSettings = null;
 
 export function convertNameToId(name) {
   let id = name.replace(/ /g, '_');
@@ -28,7 +29,7 @@ export default function Worldmap({geoJson, data}) {
   const gRef = useRef();
   const divRef = useRef();
 
-  var infoSettings = useContext(SettingsContext);
+  infoSettings = useContext(SettingsContext);
   
   let selectedCountry, selectedCountryColor = null;
   let countryStats = null;
@@ -128,10 +129,13 @@ export default function Worldmap({geoJson, data}) {
     // console.log(event)
     // console.log(event.target.id)
     if (selectedCountry){
+      console.log('del country')
       d3.select(selectedCountry).style('fill', selectedCountryColor)
       selectedCountry = null;
     }
+    console.log('set country')
     selectedCountry = event.target;
+    infoSettings.setCountry(convertIdToName(selectedCountry.id));
     selectedCountryColor = event.target.fill
     d3.select(event.target).style('fill', 'red')
     return event.target
