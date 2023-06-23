@@ -10,6 +10,19 @@ const path = d3.geoPath(projection);
 const width = 1200;
 const height = 500;
 
+export function convertNameToId(name) {
+  let id = name.replace(/ /g, '_');
+  id = id.replace(/\./g, '');
+  // console.log('Name: ' + name + ' id: ' + id)
+  return id;
+}
+
+function convertIdToName(name) {
+  let id = name.replace(/_/g, ' ');
+  // console.log('Name: ' + name + ' id: ' + id)
+  return id;
+}
+
 export default function Worldmap({geoJson, data}) {
   const svgRef = useRef();
   const gRef = useRef();
@@ -29,8 +42,11 @@ export default function Worldmap({geoJson, data}) {
     .on('zoom', handleZoom);
 
   useEffect(() => {
-
-      console.log(infoSettings.country)
+    console.log('Chosen country:' + infoSettings.country)
+    if (infoSettings.country) {
+      let countryId = convertNameToId(infoSettings.country)
+      d3.select('#' + countryId).style('fill', 'orange')
+    }
 
   },[infoSettings])
 
@@ -53,7 +69,7 @@ export default function Worldmap({geoJson, data}) {
     const mousemove = function (event, d) {
       if (event.originalTarget.id) {
         tooltip
-          .html(event.originalTarget.id + "<br/>" +  Number(countryStats[event.originalTarget.id]).toFixed(2))
+          .html(convertIdToName(event.originalTarget.id) + "<br/>" +  Number(countryStats[event.originalTarget.id]).toFixed(2))
           .style("left", (event.x + 10) + "px")
           .style("top", (event.y + 10) + "px")
           .style('position', 'absolute')
@@ -96,20 +112,6 @@ export default function Worldmap({geoJson, data}) {
   [min, max, countryStats] = colorCoding(data)
   const colorScale = d3.scaleSequential(d3.interpolateBlues).domain([min, max]);
 
-  // ToDo: geoJson and survey country names include different notation
-//  let geosJsonCountries = new Map();
-//  geoJson.countries.features.map(feature => (
-//    geosJsonCountries.set(feature.properties.name, 1)
-//  ));
-//  let diffCountries = []
-//  Object.keys(countryStats).forEach(key => {
-//    if (!geosJsonCountries.has(key)) {
-//      diffCountries.push(key)
-//    }
-//  });
-//  console.log(geosJsonCountries)
-//  console.log(diffCountries)
-
   const mouseclick = function (event, d) {
     // console.log(event)
     // console.log(event.target.id)
@@ -130,9 +132,9 @@ export default function Worldmap({geoJson, data}) {
         <g className="marks" ref={gRef}>
           <path className="sphere" d={path({type: 'Sphere'}).attr} /* outline of the globe */ />
           {geoJson.countries.features.map(feature => (
-            <path className="country" id={feature.properties.name} d={path(feature)} fill={
-              colorScale(countryStats[feature.properties.name])
-            } onClick={mouseclick} />
+            <path className="country" id={convertNameToId(feature.properties.name)} d={path(feature)}
+                  fill={colorScale(countryStats[convertNameToId(feature.properties.name)])} onClick={mouseclick}
+            />
           ))}
           <path className="interiors" d={path(geoJson.interiors)}/>
         </g>

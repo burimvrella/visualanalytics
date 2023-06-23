@@ -1,3 +1,5 @@
+import {convertNameToId} from './worldmap'
+
 function calcMean(array) {
   let sum = 0;
   for( let i = 0; i < array.length; i++ ){
@@ -12,10 +14,11 @@ function calcAverageEdLevel(data) {
   let countryStats = {}
 
   data.map(row => {
-    if (!countryStats[row.Country]) {
-      countryStats[row.Country] = [];
+    let countryId = convertNameToId(row.Country)
+    if (!countryStats[countryId]) {
+      countryStats[countryId] = [];
     }
-    countryStats[row.Country].push(row.EdLevel);
+    countryStats[countryId].push(row.EdLevel);
   })
   //console.log(countryStats['Germany'])
   let min = 1000000;
