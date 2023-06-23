@@ -12,6 +12,7 @@ import surveydata from './data/surveydata_v5.csv';
 function App() {
   const [data, setData] = useState([]);
   const [country, setCountry] = useState("");
+  const [treemapCountry, setTreemapCountry] = useState("");
   const [xAxis, setxAxis] = useState("");
   const [yAxis, setyAxis] = useState("");
 
@@ -39,12 +40,14 @@ function App() {
         income,
         programmingLanguage,
         heatmap,
+        treemapCountry,
         setxAxis,
         setyAxis,
         setIncome,
         setProgrammingLanguage,
         setHeatmap,
-        setCountry
+        setCountry,
+        setTreemapCountry
         }}>
 
         <Settings data={data}/>

@@ -62,7 +62,8 @@ export default function Worldmap({geoJson, data}) {
   useEffect(() => {
     // console.log('Chosen country:' + infoSettings.country)
     if (infoSettings.country !== "") {
-      handleCountrySelection(convertNameToId(infoSettings.country))
+      handleCountrySelection(convertNameToId(infoSettings.country));
+      infoSettings.setCountry(convertIdToName(infoSettings.country));
     }
 
   },[infoSettings])
@@ -101,6 +102,15 @@ export default function Worldmap({geoJson, data}) {
         .duration(20)
         .style("opacity", 0)
     }
+    const mouseclicker = function (event, d) {
+      //console.log('mouseclicker!')
+      handleCountrySelection(event.target.id);
+      infoSettings.setCountry(convertIdToName(event.target.id));
+
+      tooltip
+        .transition()
+        .style("opacity", 0)
+    }
 
     svgElement.call(zoom);
     svgElement.selectAll('path')
@@ -109,6 +119,7 @@ export default function Worldmap({geoJson, data}) {
           .on("mouseover", mouseover)
           .on("mousemove", mousemove)
           .on("mouseleave", mouseleave)
+          .on("click", mouseclicker)
       })
 
     return () => {
@@ -138,7 +149,8 @@ export default function Worldmap({geoJson, data}) {
   const colorScale = d3.scaleSequential(d3.interpolateBlues).domain([min, max]);
 
   const mouseclick = function (event, d) {
-    handleCountrySelection(event.target.id)
+    // console.log('mouseclick')
+    handleCountrySelection(event.target.id);
   }
 
   return (
