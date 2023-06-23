@@ -1,11 +1,12 @@
-import {useEffect, useRef} from 'react'
+import {useContext, useEffect, useRef} from 'react'
 import * as d3 from 'd3'
 import './worldmap.css'
 import {colorCoding} from './colorCoding'
+import SettingsContext from '../Settings/settingscontext';
 
 const projection = d3.geoNaturalEarth1();
 const path = d3.geoPath(projection);
-const graticule = d3.geoGraticule();
+//const graticule = d3.geoGraticule();
 const width = 1200;
 const height = 500;
 
@@ -13,6 +14,9 @@ export default function Worldmap({geoJson, data}) {
   const svgRef = useRef();
   const gRef = useRef();
   const divRef = useRef();
+
+  var infoSettings = useContext(SettingsContext);
+  
   let selectedCountry, selectedCountryColor = null;
   let countryStats = null;
   const handleZoom = ({transform}) => {
@@ -23,6 +27,12 @@ export default function Worldmap({geoJson, data}) {
     .extent([[0, 0], [width, height]])
     .scaleExtent([1, 12])
     .on('zoom', handleZoom);
+
+  useEffect(() => {
+
+      console.log(infoSettings.country)
+
+  },[infoSettings])
 
   useEffect(() => {
     const svgElement = d3.select(svgRef.current);
