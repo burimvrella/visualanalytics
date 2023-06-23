@@ -9,13 +9,13 @@
   border-radius: 10px;
   text-align: center;
 }
-text#title{
+.title{
   font-size: 25px;
   font-weight: bold;
   text-anchor: middle;
+  padding-bottom: 20px;
 }
 
 text#yaxis{
-  transform: rotate(90deg);
-  transform-origin: top left;
+  margin-top: 20px;
 }

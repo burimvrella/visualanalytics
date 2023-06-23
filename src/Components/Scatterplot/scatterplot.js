@@ -17,6 +17,7 @@ function drawScatterplot(data,xAxisName,yAxisName,svgRef){
                   .style('margin-left', '45px');
 
 
+    
     const xScale = d3.scalePoint()
                     .domain(data.map(function(d) { return d[xAxisName]; }))
                     .range([0,width]);
@@ -38,19 +39,13 @@ function drawScatterplot(data,xAxisName,yAxisName,svgRef){
         .attr("x", 9)
         .attr("dy", ".35em")
         .attr("transform", "rotate(90)")
-        .style("text-anchor", "start");
+        .style("text-anchor", "start")
+        .style("margin","20px");
       
 
     svg.append('g')
       .call(yAxis);
-
-    
-    svg.append('text')
-      .attr('id','title')
-      .attr('x', width/2)
-      .attr('y', - 10)
-      .text('Scatterplot with random data');
-    
+  
     svg.append('text')
         .attr('x', width/2 - 10)
         .attr('y', height + 35)
@@ -58,8 +53,8 @@ function drawScatterplot(data,xAxisName,yAxisName,svgRef){
 
     svg.append('text')
         .attr('id','yaxis')
-        .attr('y', width/10 )
-        .attr('x', height/2 - 35)
+        .attr('y', height/16 - 40)
+        .attr('x', width/16 - 100)
         .text('Y Axis');
 
         
@@ -67,8 +62,8 @@ function drawScatterplot(data,xAxisName,yAxisName,svgRef){
         .data(data)
         .enter()
         .append('circle')
-        .attr('cx', d => xScale(d.Country))
-        .attr('cy', d => yScale(d.Employment))
+        .attr('cx', d => xScale(d[xAxisName]))
+        .attr('cy', d => yScale(d[yAxisName]))
         .attr('r', 2)
         .on('mouseover', function(d, i) {
           // make the mouseover'd element
@@ -93,7 +88,7 @@ function drawScatterplot(data,xAxisName,yAxisName,svgRef){
 
 export default function Scatterplot(props) {
 
-  const settingsContext = useContext(SettingsContext);
+  const infoSettings = useContext(SettingsContext);
 
   //console.log(settingsContext.age)
   const svgRef = useRef();
@@ -101,14 +96,30 @@ export default function Scatterplot(props) {
 
   useEffect(() => {
 
-    
-    drawScatterplot(props.data,props.data.Country,props.data.Employment,svgRef)
+    console.log(infoSettings.xAxis)
+    console.log(infoSettings.yAxis)
+    if(infoSettings.xAxis != "" && infoSettings.yAxis != "")
+    {
+      drawScatterplot(props.data,infoSettings.xAxis,infoSettings.yAxis,svgRef)
+    }
 
-  },[props.data]);
+  },[props.data,infoSettings]);
 
-  return (
-  <div className="Down-Right-Scatter">
-  <svg viewBox="0 0 450 400" ref={svgRef}></svg>
-  </div>
-  )
+  if (props.data.length === 0 || infoSettings.xAxis === "" || infoSettings.yAxis === "") {
+    return (
+    <div className="Down-Right-Scatter">
+       <pre>Loading...</pre>
+       </div>
+       )
+  }
+  else{
+    return (
+      <div className="Down-Right-Scatter">
+        <div className='title'>Scatterplot {infoSettings.xAxis} vs {infoSettings.yAxis}</div>
+      <svg viewBox="0 0 450 400" ref={svgRef}></svg>
+      </div>
+      )
+  }
+
+
 }

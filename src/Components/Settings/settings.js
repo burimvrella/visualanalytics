@@ -1,5 +1,4 @@
 import React, { useContext, useState } from 'react';
-import Dropdown from './dropdown.js';
 import Slider from 'react-slider';
 import './settings.css';
 import SettingsContext from '../Settings/settingscontext';
@@ -49,6 +48,14 @@ export default function Settings(props) {
         infoSettings.setCountry(event.target.value.replace(/\./g, ''));
       };
       
+      const handleDropdownXaxis = (event) => {
+        infoSettings.setxAxis(event.target.value);
+      };
+
+      const handleDropdownYaxis = (event) => {
+        infoSettings.setyAxis(event.target.value);
+      };
+
       function handleIncome(value) {
         setIncomes([value[0],value[1]])
       };
@@ -59,6 +66,7 @@ export default function Settings(props) {
       console.log('change');
       infoSettings.setIncome([value[0],value[1]]); 
     }, 5000);};
+    
 
 
       data.forEach(row => {
@@ -130,9 +138,27 @@ export default function Settings(props) {
           <small>Current Range: {incomes[1] - incomes[0]}€</small>
 
           <div className='scattersettings'>
+
           <h2>Scatterplot Settings</h2>
-          <Dropdown data={dropdownaxis} lable={'Choose X-Axes'} />
-          <Dropdown data={dropdownaxis} lable={'Choose Y-Axes'} />
+
+            <div className='Dropdown'>
+            <label>{'Choose Scatterplot X-Axes'}: </label><br/>
+              <select id='select' value={infoSettings.xAxis} onChange={handleDropdownXaxis} >
+                {dropdownaxis.map((option) => (
+                  <option key={option.id} value={option.value}>{option.id}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className='Dropdown'>
+            <label>{'Choose Scatterplot Y-Axes'}: </label><br/>
+              <select id='select' value={infoSettings.yAxis} onChange={handleDropdownYaxis} >
+                {dropdownaxis.map((option) => (
+                  <option key={option.id} value={option.value}>{option.id}</option>
+                ))}
+              </select>
+            </div>
+
           </div>
     
         </div>
