@@ -1,6 +1,9 @@
-import React, {useRef} from 'react'
+import React, {useContext, useEffect, useRef} from 'react'
 import './treemap.css'
 import * as d3 from 'd3';
+import SettingsContext from '../Settings/settingscontext';
+import {convertNameToId} from "../Worldmap/worldmap";
+
 
 const width = 600;
 const height = 400;
@@ -77,8 +80,17 @@ function filterData(query_country, data) {
 }
 
 export default function Treemap({data}) {
+  const infoSettings = useContext(SettingsContext);
   const svgRef = useRef(null);
   const query_country = 'United States of America'
+
+  useEffect(() => {
+    // console.log('Chosen country:' + infoSettings.country)
+    if (infoSettings.country !== "") {
+      console.log(infoSettings.country)
+    }
+
+  },[infoSettings])
 
   if (data.length === 0) {
     return <pre>Loading...</pre>;
