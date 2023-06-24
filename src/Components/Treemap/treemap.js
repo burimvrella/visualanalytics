@@ -8,7 +8,7 @@ import {convertNameToId} from "../Worldmap/worldmap";
 const width = 600;
 const height = 400;
 
-function renderTreemap(svgRef, treemapData, infoSettings) {
+function renderTreemap(svgRef, treemapData, infoSettings, minValue, maxValue) {
   const svg = d3.select(svgRef.current);
   svg.selectAll('g').remove();
 
@@ -28,16 +28,15 @@ function renderTreemap(svgRef, treemapData, infoSettings) {
     .join('g')
     .attr('transform', (d) => `translate(${d.x0},${d.y0})`);
 
-  const fader = (color) => d3.interpolateRgb(color, '#fff')(0.3);
-  const colorScale = d3.scaleOrdinal(d3.schemeCategory10.map(fader));
+  const colorScale = d3.scaleSequential(d3.interpolateBlues).domain([minValue, maxValue+100]);
 
   nodes
     .append('rect')
     .attr('width', (d) => d.x1 - d.x0)
     .attr('height', (d) => d.y1 - d.y0)
-    .attr('fill', (d) => colorScale(d.data.name))
+    .attr('fill', (d) => colorScale(d.data.value))
     .on("click", (event, d) => {
-      infoSettings.setProgrammingLanguage(d.id)
+      infoSettings.setProgrammingLanguage(d.id);
     });
 
   const fontSize = 12;
@@ -57,7 +56,7 @@ function filterData(query_country, data) {
   data.columns.forEach(column => {
     if (column.includes("#")) {
       progLanguages.push(column)
-      progLangStats[column] = 0
+      progLangStats[column] = 0;
     }
   })
 
@@ -71,7 +70,15 @@ function filterData(query_country, data) {
     }
   })
 
+  let maxValue = 0;
+  let minValue = 9999;
   Object.keys(progLangStats).forEach(name => {
+    if (progLangStats[name] > maxValue) {
+      maxValue = progLangStats[name];
+    }
+    if (progLangStats[name] < minValue) {
+      minValue = progLangStats[name];
+    }
     treemapData.push({"name": name, "parent": query_country, "value": progLangStats[name]})
     treemapData.sort((p1,p2) => (p1.value < p2.value) ? 1 : (p1.value > p2.value) ? -1 : 0)
   });
@@ -80,7 +87,7 @@ function filterData(query_country, data) {
     treemapData.length = maxLength
   }
   treemapData.push({"name": query_country, "parent": "", "value": ""})
-  return treemapData
+  return [treemapData, minValue, maxValue]
 }
 
 export default function Treemap({data}) {
@@ -88,21 +95,23 @@ export default function Treemap({data}) {
   const svgRef = useRef(null);
   let query_country = 'United States of America'
   let treemap_data = '';
+  let min = 0;
+  let max = 0;
 
   useEffect(() => {
     // console.log('Chosen country:' + infoSettings.country)
     if (infoSettings.country !== "") {
       query_country = infoSettings.country;
-      treemap_data = filterData(query_country, data)
-      renderTreemap(svgRef, treemap_data, infoSettings)
+      [treemap_data, min, max] = filterData(query_country, data)
+      renderTreemap(svgRef, treemap_data, infoSettings, min, max)
     }
   },[infoSettings])
 
   if (data.length === 0) {
     return <pre>Loading...</pre>;
   }
-  treemap_data = filterData(query_country, data)
-  renderTreemap(svgRef, treemap_data, infoSettings)
+  [treemap_data, min, max] = filterData(query_country, data)
+  renderTreemap(svgRef, treemap_data, infoSettings, min, max)
 
   return (
     <div className="Down-Left-Treemap">
