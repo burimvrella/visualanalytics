@@ -161,7 +161,10 @@ export default function Worldmap({geoJson, data}) {
         .style("opacity", 0)
     }
     const mouseclicker = function (event, d) {
-      //console.log('mouseclicker!')
+      //console.log('mouseclicker')
+      if (event.target.id === '') {
+        return
+      }
       handleCountrySelection(event.target.id);
       infoSettings.setCountry(convertIdToName(event.target.id));
 
