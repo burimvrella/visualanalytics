@@ -10,6 +10,7 @@ const height = 400;
 
 function renderTreemap(svgRef, treemapData) {
   const svg = d3.select(svgRef.current);
+  svg.selectAll('g').remove();
 
   svg.attr('width', width).attr('height', height);
 
