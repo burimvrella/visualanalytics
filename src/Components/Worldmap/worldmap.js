@@ -14,6 +14,8 @@ let selectedCountryId = '';
 let selectedCountryColor = '';
 let selectedHeatmapVisu = '';
 let selectedProgLangFilter = '';
+let selectedCompFilterMin = 0;
+let selectedCompFilterMax = 0;
 let colorScale = '';
 let countryStats = null;
 
@@ -59,10 +61,14 @@ function getColorCountry(id) {
 function renewColorCoding(data, gRef) {
   let min = 0;
   let max = 0;
-  [min, max, countryStats] = colorCoding(data, selectedHeatmapVisu, selectedProgLangFilter)
-  console.log('renewColorCoding [' + selectedHeatmapVisu + ' | ' + selectedProgLangFilter)
+  [min, max, countryStats] = colorCoding(data, selectedHeatmapVisu, selectedProgLangFilter,
+    [selectedCompFilterMin, selectedCompFilterMax])
+  // console.log('renewColorCoding [' + selectedHeatmapVisu + ' | ' + selectedProgLangFilter + ' | ' + selectedCompensationFilter)
 
   const svgG = d3.select(gRef.current);
+  if (svgG.selectAll('path')._groups[0] === undefined) {
+    return
+  }
   svgG.selectAll('path')._groups[0].forEach(path => {
     if (path.id === '') return;
     const pathRef = d3.select('#' + path.id);
@@ -109,10 +115,14 @@ export default function Worldmap({geoJson, data}) {
         renewColorCoding(data, gRef);
       }
     }
-    //console.log(infoSettings.income)
-    //if (infoSettings.income) {
-    //
-    //}
+    if (infoSettings.income[0] !== selectedCompFilterMin || infoSettings.income[1] !== selectedCompFilterMax ) {
+      if (infoSettings.income[0] !== undefined || infoSettings.income[1] !== undefined) {
+        console.log('ProgrammingLanguage' + selectedCompFilterMin + " | " + selectedCompFilterMax);
+        selectedCompFilterMin = infoSettings.income[0];
+        selectedCompFilterMax = infoSettings.income[1];
+        renewColorCoding(data, gRef);
+      }
+    }
 
   },[infoSettings])
 
@@ -185,7 +195,7 @@ export default function Worldmap({geoJson, data}) {
 
   let min = 0;
   let max = 0;
-  [min, max, countryStats] = colorCoding(data, selectedHeatmapVisu, selectedProgLangFilter)
+  [min, max, countryStats] = colorCoding(data, selectedHeatmapVisu, selectedProgLangFilter, [0, 0])
   if (!countryStats) {
     return (
       <div className="Up-Worldmap" >

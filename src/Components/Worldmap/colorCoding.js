@@ -11,19 +11,24 @@ function calcMean(array) {
   return sum/array.length;
 }
 
-function calcAverageEdLevel(data, progLangFilter) {
+function calcAverageEdLevel(data, progLangFilter, compFilter) {
   let countryStats = {}
   data.map(row => {
     let countryId = convertNameToId(row.Country)
     if (!countryStats[countryId]) {
       countryStats[countryId] = [];
     }
-    if (progLangFilter === '') {
-      countryStats[countryId].push(row.EdLevel)
+    if (progLangFilter !== '' && row[progLangFilter] === '0') {
+      return
     }
-    else if (row[progLangFilter] === '1') {
-      countryStats[countryId].push(row.EdLevel)
+    if (compFilter[0] !== 0 || compFilter[1] !== 0) {
+      //console.log('compFilterActivated')
+      const compensation = parseInt(row.CompYearEur)
+      if (compensation < compFilter[0] || compensation > compFilter[1]) {
+        return;
+      }
     }
+    countryStats[countryId].push(row.EdLevel)
   })
   //console.log(countryStats['Germany'])
   let min = 1000000;
@@ -38,7 +43,7 @@ function calcAverageEdLevel(data, progLangFilter) {
     if (avg > max) {
       max = avg;
     }
-    //console.log("Average Edlevel of " + key + " = " + avg + " len: " + len);
+    // console.log("Average Edlevel of " + key + " = " + avg + " len: " + len);
   });
   return [min, max, countryStats];
 }
@@ -99,7 +104,7 @@ function calcNumberOfProgrammers(data) {
   return [min, max, countryStats];
 }
 
-export const colorCoding = (data, heatMapVisu, progLangFilter) => {
+export const colorCoding = (data, heatMapVisu, progLangFilter, compFilter) => {
   if (!data) {
     return [0, 0, null]
   }
@@ -111,8 +116,8 @@ export const colorCoding = (data, heatMapVisu, progLangFilter) => {
   } else if (heatMapVisu === 'CompYearCountry') {
     [min, max, countrystats] = calcAverageCompensation(data);
   } else {
-    //console.log('progLangFilter: ' + progLangFilter + ' ' + progLangFilter);
-    [min, max, countrystats] = calcAverageEdLevel(data, progLangFilter);
+    // console.log('progLangFilter: ' + progLangFilter + ' compFilter' + compFilter);
+    [min, max, countrystats] = calcAverageEdLevel(data, progLangFilter, compFilter);
   }
   return [min, max, countrystats];
 }
