@@ -12,10 +12,14 @@ const height = 500;
 var infoSettings = null;
 let selectedCountryId = '';
 let selectedCountryColor = '';
+let selectedHeatmapVisu = '';
+let colorScale = '';
+let countryStats = null;
 
 export function convertNameToId(name) {
   let id = name.replace(/ /g, '_');
   id = id.replace(/\./g, '');
+  id = id.replace(/'/g, '');
   // console.log('Name: ' + name + ' id: ' + id)
   return id;
 }
@@ -42,6 +46,15 @@ function handleCountrySelection(countryId) {
   // console.log('selected countryId: ' + selectedCountryId + 'fill: ' + selectedCountryColor)
 }
 
+function getColorCountry(id) {
+  let color = countryStats[id]
+  console.log(color)
+  if (color === undefined) {
+    color = 'grey'
+  }
+  return color;
+}
+
 export default function Worldmap({geoJson, data}) {
   const svgRef = useRef();
   const gRef = useRef();
@@ -49,7 +62,6 @@ export default function Worldmap({geoJson, data}) {
 
   infoSettings = useContext(SettingsContext);
 
-  let countryStats = null;
   const handleZoom = ({transform}) => {
     gRef.current.setAttribute('transform', transform.toString());
   };
@@ -62,8 +74,26 @@ export default function Worldmap({geoJson, data}) {
   useEffect(() => {
     // console.log('Chosen country:' + infoSettings.country)
     if (infoSettings.country !== "") {
+      console.log('infoSettings.country changed')
       handleCountrySelection(convertNameToId(infoSettings.country));
       infoSettings.setCountry(convertIdToName(infoSettings.country));
+    }
+
+    if (infoSettings.heatmap !== selectedHeatmapVisu) {
+      selectedHeatmapVisu = infoSettings.heatmap
+      console.log('heat map need change to:' + infoSettings.heatmap)
+      const svgG = d3.select(gRef.current);
+
+      let min = 0;
+      let max = 0;
+      [min, max, countryStats] = colorCoding(data, selectedHeatmapVisu)
+
+      svgG.selectAll('path')._groups[0].forEach(path => {
+        if (path.id === '') return;
+        const pathRef = d3.select('#' + path.id);
+        colorScale = d3.scaleSequential(d3.interpolateBlues).domain([min, max]);
+        pathRef.style('fill', colorScale(countryStats[path.id]));
+      })
     }
 
   },[infoSettings])
@@ -137,7 +167,7 @@ export default function Worldmap({geoJson, data}) {
 
   let min = 0;
   let max = 0;
-  [min, max, countryStats] = colorCoding(data)
+  [min, max, countryStats] = colorCoding(data, selectedHeatmapVisu)
   if (!countryStats) {
     return (
       <div className="Up-Worldmap" >
@@ -145,8 +175,7 @@ export default function Worldmap({geoJson, data}) {
         <pre>Loading...</pre>
       </div>
     )}
-  // colorCoding(data)
-  const colorScale = d3.scaleSequential(d3.interpolateBlues).domain([min, max]);
+  colorScale = d3.scaleSequential(d3.interpolateBlues).domain([min, max]);
 
   const mouseclick = function (event, d) {
     // console.log('mouseclick')

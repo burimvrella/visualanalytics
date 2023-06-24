@@ -63,7 +63,7 @@ function calcAverageCompensation(data) {
     if (avg > max) {
       max = avg;
     }
-    console.log("Average Compensation of " + key + " = " + avg + " len: " + len);
+    // console.log("Average Compensation of " + key + " = " + avg + " len: " + len);
   });
   return [min, max, countryStats];
 }
@@ -95,13 +95,20 @@ function calcNumberOfProgrammers(data) {
   return [min, max, countryStats];
 }
 
-export const colorCoding = (data) => {
+export const colorCoding = (data, heatMapVisu) => {
   if (!data) {
     return [0, 0, null]
   }
-  //[min, max, countrystats] = calcAverageEdLevel(data)
-  const [min, max, countrystats] = calcNumberOfProgrammers(data)
-  // console.log(min + " | " + max + " | ")
-  // console.log(countrystats)
+  let min = 0;
+  let max = 0;
+  let countrystats = null;
+  if (heatMapVisu === 'NumProgCountry') {
+    [min, max, countrystats] = calcNumberOfProgrammers(data)
+
+  } else if (heatMapVisu === 'CompYearCountry') {
+    [min, max, countrystats] = calcAverageCompensation(data)
+  } else {
+    [min, max, countrystats] = calcAverageEdLevel(data)
+  }
   return [min, max, countrystats]
 }
