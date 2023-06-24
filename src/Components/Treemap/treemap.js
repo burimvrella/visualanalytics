@@ -8,7 +8,7 @@ import {convertNameToId} from "../Worldmap/worldmap";
 const width = 600;
 const height = 400;
 
-function renderTreemap(svgRef, treemapData) {
+function renderTreemap(svgRef, treemapData, infoSettings) {
   const svg = d3.select(svgRef.current);
   svg.selectAll('g').remove();
 
@@ -35,7 +35,10 @@ function renderTreemap(svgRef, treemapData) {
     .append('rect')
     .attr('width', (d) => d.x1 - d.x0)
     .attr('height', (d) => d.y1 - d.y0)
-    .attr('fill', (d) => colorScale(d.data.name));
+    .attr('fill', (d) => colorScale(d.data.name))
+    .on("click", (event, d) => {
+      infoSettings.setProgrammingLanguage(d.id)
+    });
 
   const fontSize = 12;
   nodes
@@ -91,16 +94,15 @@ export default function Treemap({data}) {
     if (infoSettings.country !== "") {
       query_country = infoSettings.country;
       treemap_data = filterData(query_country, data)
-      renderTreemap(svgRef, treemap_data)
+      renderTreemap(svgRef, treemap_data, infoSettings)
     }
-
   },[infoSettings])
 
   if (data.length === 0) {
     return <pre>Loading...</pre>;
   }
   treemap_data = filterData(query_country, data)
-  renderTreemap(svgRef, treemap_data)
+  renderTreemap(svgRef, treemap_data, infoSettings)
 
   return (
     <div className="Down-Left-Treemap">
