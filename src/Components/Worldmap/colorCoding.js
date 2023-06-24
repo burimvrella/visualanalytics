@@ -11,15 +11,19 @@ function calcMean(array) {
   return sum/array.length;
 }
 
-function calcAverageEdLevel(data) {
+function calcAverageEdLevel(data, progLangFilter) {
   let countryStats = {}
-
   data.map(row => {
     let countryId = convertNameToId(row.Country)
     if (!countryStats[countryId]) {
       countryStats[countryId] = [];
     }
-    countryStats[countryId].push(row.EdLevel);
+    if (progLangFilter === '') {
+      countryStats[countryId].push(row.EdLevel)
+    }
+    else if (row[progLangFilter] === '1') {
+      countryStats[countryId].push(row.EdLevel)
+    }
   })
   //console.log(countryStats['Germany'])
   let min = 1000000;
@@ -95,7 +99,7 @@ function calcNumberOfProgrammers(data) {
   return [min, max, countryStats];
 }
 
-export const colorCoding = (data, heatMapVisu) => {
+export const colorCoding = (data, heatMapVisu, progLangFilter) => {
   if (!data) {
     return [0, 0, null]
   }
@@ -103,12 +107,12 @@ export const colorCoding = (data, heatMapVisu) => {
   let max = 0;
   let countrystats = null;
   if (heatMapVisu === 'NumProgCountry') {
-    [min, max, countrystats] = calcNumberOfProgrammers(data)
-
+    [min, max, countrystats] = calcNumberOfProgrammers(data);
   } else if (heatMapVisu === 'CompYearCountry') {
-    [min, max, countrystats] = calcAverageCompensation(data)
+    [min, max, countrystats] = calcAverageCompensation(data);
   } else {
-    [min, max, countrystats] = calcAverageEdLevel(data)
+    //console.log('progLangFilter: ' + progLangFilter + ' ' + progLangFilter);
+    [min, max, countrystats] = calcAverageEdLevel(data, progLangFilter);
   }
-  return [min, max, countrystats]
+  return [min, max, countrystats];
 }

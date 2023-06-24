@@ -13,6 +13,7 @@ var infoSettings = null;
 let selectedCountryId = '';
 let selectedCountryColor = '';
 let selectedHeatmapVisu = '';
+let selectedProgLangFilter = '';
 let colorScale = '';
 let countryStats = null;
 
@@ -55,6 +56,21 @@ function getColorCountry(id) {
   return color;
 }
 
+function renewColorCoding(data, gRef) {
+  let min = 0;
+  let max = 0;
+  [min, max, countryStats] = colorCoding(data, selectedHeatmapVisu, selectedProgLangFilter)
+  console.log('renewColorCoding [' + selectedHeatmapVisu + ' | ' + selectedProgLangFilter)
+
+  const svgG = d3.select(gRef.current);
+  svgG.selectAll('path')._groups[0].forEach(path => {
+    if (path.id === '') return;
+    const pathRef = d3.select('#' + path.id);
+    colorScale = d3.scaleSequential(d3.interpolateBlues).domain([min, max]);
+    pathRef.style('fill', colorScale(countryStats[path.id]));
+  })
+}
+
 export default function Worldmap({geoJson, data}) {
   const svgRef = useRef();
   const gRef = useRef();
@@ -82,19 +98,21 @@ export default function Worldmap({geoJson, data}) {
     if (infoSettings.heatmap !== selectedHeatmapVisu) {
       selectedHeatmapVisu = infoSettings.heatmap
       console.log('heat map need change to:' + infoSettings.heatmap)
-      const svgG = d3.select(gRef.current);
 
-      let min = 0;
-      let max = 0;
-      [min, max, countryStats] = colorCoding(data, selectedHeatmapVisu)
-
-      svgG.selectAll('path')._groups[0].forEach(path => {
-        if (path.id === '') return;
-        const pathRef = d3.select('#' + path.id);
-        colorScale = d3.scaleSequential(d3.interpolateBlues).domain([min, max]);
-        pathRef.style('fill', colorScale(countryStats[path.id]));
-      })
+      renewColorCoding(data, gRef);
     }
+
+    if (infoSettings.programmingLanguage) {
+      console.log('ProgrammingLanguage' + infoSettings.programmingLanguage)
+      if (infoSettings.programmingLanguage !== selectedProgLangFilter) {
+        selectedProgLangFilter = infoSettings.programmingLanguage;
+        renewColorCoding(data, gRef);
+      }
+    }
+    //console.log(infoSettings.income)
+    //if (infoSettings.income) {
+    //
+    //}
 
   },[infoSettings])
 
@@ -167,7 +185,7 @@ export default function Worldmap({geoJson, data}) {
 
   let min = 0;
   let max = 0;
-  [min, max, countryStats] = colorCoding(data, selectedHeatmapVisu)
+  [min, max, countryStats] = colorCoding(data, selectedHeatmapVisu, selectedProgLangFilter)
   if (!countryStats) {
     return (
       <div className="Up-Worldmap" >
