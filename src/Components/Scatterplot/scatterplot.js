@@ -7,15 +7,39 @@ import SettingsContext from '../Settings/settingscontext';
 function drawScatterplot(data,xAxisName,yAxisName,svgRef){
 
 
-  const width = 490;
-  const height = 390;
+  const width = 500;
+  const height = 400;
+  const svg =  d3.select(svgRef.current)
+  svg.selectAll('g').remove()
+  svg.selectAll('circle').remove()
+  svg.selectAll('text').remove()
 
-  const svg = d3.select(svgRef.current)
-                  .attr('width', width)
-                  .attr('height', height)
-                  .style('overflow','visible')
-                  .style('margin', '20px')
-                  .style('margin-left', '45px');
+  svg.attr('width', width)
+    .attr('height', height)
+    .style('overflow','visible')
+    .style('margin', '20px')
+    .style('margin-left', '45px');
+  
+    if(!isNaN(data[0][xAxisName]))
+    {
+      console.log("sortX")
+      data.sort((p1, p2) =>  ((parseInt(p1[xAxisName]) < parseInt(p2[xAxisName])) ? -1 : (parseInt(p1[xAxisName]) > parseInt(p2[xAxisName])) ? 1 : 0));
+    }
+    else
+    {
+      console.log("sortXelse")
+      data.sort((p1, p2) =>  (p1[xAxisName] < p2[xAxisName]) ? -1 : (p1[xAxisName] > p2[xAxisName]) ? 1 : 0)
+    }
+
+    if(!isNaN(data[0][yAxisName]))
+    {
+      data.sort((p1, p2) =>  ((parseInt(p1[yAxisName]) < parseInt(p2[yAxisName])) ? -1 : (parseInt(p1[yAxisName]) > parseInt(p2[yAxisName])) ? 1 : 0));
+    }
+    else
+    {
+      data.sort((p1, p2) =>  (p1[yAxisName] < p2[yAxisName]) ? -1 : (p1[yAxisName] > p2[yAxisName]) ? 1 : 0)
+    }
+
     
     const xScale = d3.scalePoint()
                     .domain(data.map(function(d) { return d[xAxisName]; }))
@@ -30,7 +54,7 @@ function drawScatterplot(data,xAxisName,yAxisName,svgRef){
     const yAxis = d3.axisLeft(yScale);
 
     svg.append('g')
-      .attr("class", "x axis")
+      .attr("class", "xaxis")
       .call(xAxis)
       .attr('transform', `translate(0, ${height})`)
       .selectAll("text")
@@ -43,19 +67,19 @@ function drawScatterplot(data,xAxisName,yAxisName,svgRef){
       
 
     svg.append('g')
+    .attr("class", "yaxis")
       .call(yAxis);
-  
-    svg.append('text')
-        .attr('x', width/2 - 10)
-        .attr('y', height + 35)
-        .text('X Axis');
 
     svg.append('text')
-        .attr('id','yaxis')
-        .attr('y', height/16 - 40)
-        .attr('x', width/16 - 100)
-        .text('Y Axis');
+      .attr('x', width/2 - 10)
+      .attr('y', height + 40)
+      .text(xAxisName);
 
+    svg.append('text')
+      .attr('id','yaxis')
+      .attr('y', height/2 - 40)
+      .attr('x', width/16 - 100)
+      .text(yAxisName);
         
     svg.selectAll()
         .data(data)
@@ -72,6 +96,19 @@ function drawScatterplot(data,xAxisName,yAxisName,svgRef){
             .duration(50)
             .attr('r', 4)
             .attr('fill', '#ff0000');
+          
+          
+          d3.select(this)
+            .append("text")
+              .attr("class", "mylabel")
+              .attr("transform", "translate(0,0)")
+              .attr("x", function(d) { return yScale(d.y); })
+              .attr("dx", "6") // margin
+              .attr("dy", ".35em") // vertical-align
+              .text(function(d) { 
+                console.log(d.ID)
+                return "Hallo"
+              })
         })
         .on('mouseout', function(d, i) {
           // return the mouseover'd element
@@ -81,7 +118,20 @@ function drawScatterplot(data,xAxisName,yAxisName,svgRef){
             .duration(50)
             .attr('r', 2)
             .attr('fill', '#000000');
+
+          
         });
+
+        if(xAxisName === 'ID')
+        {
+          svg.selectAll('.xaxis text').remove();
+          svg.selectAll('.xaxis line').remove();
+        }
+        if(yAxisName === 'ID')
+        {
+          svg.selectAll('.yaxis text').remove();
+          svg.selectAll('.yaxis line').remove();
+        }
   
 }
 
@@ -93,22 +143,27 @@ export default function Scatterplot(props) {
 
   useEffect(() => {
 
-    if(svgRef === null){
-      if(infoSettings.xAxis != "" && infoSettings.yAxis != "")
+    if(infoSettings.scatterplotCountry !== ""){
+      if(infoSettings.xAxis !== "" && infoSettings.yAxis !== "")
       {
-        drawScatterplot(props.data,infoSettings.xAxis,infoSettings.yAxis,svgRef)
+        var tempdata = []
+        var counter = 0
+        props.data.forEach(row => {
+          if(row["Country"] === infoSettings.scatterplotCountry)
+          {
+            if(row["YearsCode"] == "")
+            {
+              row["YearsCode"] = "0"
+            }
+            row['ID'] = counter
+            tempdata.push(row)
+          }
+          counter += 1
+        });
+        drawScatterplot(tempdata,infoSettings.xAxis,infoSettings.yAxis,svgRef)
       }
-
-
-    }
-    else{
-      d3.select(".Down-Right-Scatter svg").remove()
-      document.getElementsByClassName('Down-Right-Scatter').innerHTML = '<svg viewBox="0 0 450 400" ref={svgRef}></svg>'
     }
 
-      
-
-      
   },[infoSettings]);
 
   if (props.data.length === 0 || infoSettings.xAxis === "" || infoSettings.yAxis === "") {
@@ -121,7 +176,7 @@ export default function Scatterplot(props) {
     
     return (
       <div className="Down-Right-Scatter">
-        <div className='title'>Scatterplot {infoSettings.xAxis} vs {infoSettings.yAxis}</div>
+        <div className='title'>Scatterplot {infoSettings.xAxis} vs {infoSettings.yAxis} in {infoSettings.scatterplotCountry}</div>
         <svg viewBox="0 0 450 400" ref={svgRef}></svg>
       </div>
       )

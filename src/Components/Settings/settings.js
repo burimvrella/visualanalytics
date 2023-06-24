@@ -11,15 +11,18 @@ export default function Settings(props) {
   let dropdownCountry = [];
   let dropdownProgLanguage = [];
   let dropdownHeatmap = [{ id: 'EdLevel per Country', value: 'EdLevelCountry' },{ id: 'Yearly Compenstation per Country', value: 'CompYearCountry' },{ id: 'Numbers of Programmers per Country', value: 'NumProgCountry' }];
+  const data = props.data
+  var incomeyearly = []
   let min = 0
-  let max = 2500
+  let max = 2000000
+
   var timeout;
 
   var infoSettings = useContext(SettingsContext);
   const [incomes, setIncomes] = useState([min,max]);
   
   
-  const data = props.data
+
 
     if (data.length === 0) {
       return (
@@ -35,7 +38,6 @@ export default function Settings(props) {
       let countrys = []
       let incomeYearly = []
  
-   
       const handleDropdownProgLang = (event) => {
         infoSettings.setProgrammingLanguage(event.target.value);
       };
@@ -56,6 +58,18 @@ export default function Settings(props) {
         infoSettings.setyAxis(event.target.value);
       };
 
+      const handleDropdownScatterplotCountry = (event) => {
+        console.log(event.target.value)
+        infoSettings.setScatterplotCountry(event.target.value);
+        var xAxis = document.getElementById("xaxis")
+        var yAxis = document.getElementById("yaxis")
+        if(event.target.value !== "")
+        {
+          xAxis.hidden = false
+          yAxis.hidden = false
+        }
+      };
+
       function handleIncome(value) {
         setIncomes([value[0],value[1]])
       };
@@ -65,17 +79,13 @@ export default function Settings(props) {
       timeout = setTimeout(() => {
       console.log('change');
       infoSettings.setIncome([value[0],value[1]]); 
-    }, 5000);};
+    }, 1000);};
     
-
 
       data.forEach(row => {
         countrys.push(row.Country)
         incomeYearly.push(row.CompYearEur)
       })
-
-      //max = Math.max(...incomeYearly)
-      //min = Math.min(...incomeYearly)
       
       countrys = [...new Set(countrys)]
       
@@ -85,12 +95,18 @@ export default function Settings(props) {
 
       columns.forEach(lable => {
         if (!lable.includes("#")) {
-          dropdownaxis.push({ id: lable, value: lable })   
+          if(lable === 'Country')
+          {
+            dropdownaxis.push({ id: 'ID', value: 'ID' })
+          }
+          else{
+            dropdownaxis.push({ id: lable, value: lable })
+          }  
         } else {
           dropdownProgLanguage.push({ id: lable, value: lable })
         }
       });
-  
+
       return (
         <div className='Settings'>
 
@@ -139,25 +155,34 @@ export default function Settings(props) {
 
           <div className='scattersettings'>
 
-          <h2>Scatterplot Settings</h2>
+            <h2>Scatterplot Settings</h2>
 
             <div className='Dropdown'>
-            <label>{'Choose Scatterplot X-Axes'}: </label><br/>
-              <select id='select' value={infoSettings.xAxis} onChange={handleDropdownXaxis} >
-                {dropdownaxis.map((option) => (
-                  <option key={option.id} value={option.value}>{option.id}</option>
-                ))}
-              </select>
-            </div>
+                <label>Select Country for Axis:  </label><br/>
+                <select id='select' value={infoSettings.scatterplotCountry} onChange={handleDropdownScatterplotCountry}>
+                  {dropdownCountry.map((option) => (
+                      <option key={option.id} value={option.value}>{option.id}</option>
+                    ))}
+                </select>
+              </div>
 
-            <div className='Dropdown'>
-            <label>{'Choose Scatterplot Y-Axes'}: </label><br/>
-              <select id='select' value={infoSettings.yAxis} onChange={handleDropdownYaxis} >
-                {dropdownaxis.map((option) => (
-                  <option key={option.id} value={option.value}>{option.id}</option>
-                ))}
-              </select>
-            </div>
+              <div className='Dropdown' id="xaxis" hidden>
+              <label>{'Choose Scatterplot X-Axis'}: </label><br/>
+                <select className="xaxis" id='select' value={infoSettings.xAxis} onChange={handleDropdownXaxis} >
+                  {dropdownaxis.map((option) => (
+                    <option key={option.id} value={option.value}>{option.id}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className='Dropdown' id="yaxis" hidden>
+              <label>{'Choose Scatterplot Y-Axis'}: </label><br/>
+                <select className="yaxis" id='select' value={infoSettings.yAxis} onChange={handleDropdownYaxis} >
+                  {dropdownaxis.map((option) => (
+                    <option key={option.id} value={option.value}>{option.id}</option>
+                  ))}
+                </select>
+              </div>
 
           </div>
     
