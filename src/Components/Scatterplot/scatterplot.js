@@ -5,18 +5,17 @@ import SettingsContext from '../Settings/settingscontext';
 
 
 function drawScatterplot(data,xAxisName,yAxisName,svgRef){
+
+
   const width = 490;
   const height = 390;
-  //console.log(yAxisName, xAxisName)
 
   const svg = d3.select(svgRef.current)
                   .attr('width', width)
                   .attr('height', height)
                   .style('overflow','visible')
-                  .style('margin', '20px') // TODO check later if needed
+                  .style('margin', '20px')
                   .style('margin-left', '45px');
-
-
     
     const xScale = d3.scalePoint()
                     .domain(data.map(function(d) { return d[xAxisName]; }))
@@ -90,20 +89,27 @@ export default function Scatterplot(props) {
 
   const infoSettings = useContext(SettingsContext);
 
-  //console.log(settingsContext.age)
-  const svgRef = useRef();
-
+  const svgRef = useRef(null);
 
   useEffect(() => {
 
-    console.log(infoSettings.xAxis)
-    console.log(infoSettings.yAxis)
-    if(infoSettings.xAxis != "" && infoSettings.yAxis != "")
-    {
-      drawScatterplot(props.data,infoSettings.xAxis,infoSettings.yAxis,svgRef)
+    if(svgRef === null){
+      if(infoSettings.xAxis != "" && infoSettings.yAxis != "")
+      {
+        drawScatterplot(props.data,infoSettings.xAxis,infoSettings.yAxis,svgRef)
+      }
+
+
+    }
+    else{
+      d3.select(".Down-Right-Scatter svg").remove()
+      document.getElementsByClassName('Down-Right-Scatter').innerHTML = '<svg viewBox="0 0 450 400" ref={svgRef}></svg>'
     }
 
-  },[props.data,infoSettings]);
+      
+
+      
+  },[infoSettings]);
 
   if (props.data.length === 0 || infoSettings.xAxis === "" || infoSettings.yAxis === "") {
     return (
@@ -111,15 +117,17 @@ export default function Scatterplot(props) {
        <pre>Loading...</pre>
        </div>
        )
-  }
-  else{
+  }else{
+    
     return (
       <div className="Down-Right-Scatter">
         <div className='title'>Scatterplot {infoSettings.xAxis} vs {infoSettings.yAxis}</div>
-      <svg viewBox="0 0 450 400" ref={svgRef}></svg>
+        <svg viewBox="0 0 450 400" ref={svgRef}></svg>
       </div>
       )
+
   }
 
+  
 
 }
