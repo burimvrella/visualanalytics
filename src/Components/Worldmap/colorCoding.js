@@ -1,5 +1,10 @@
 import {convertNameToId} from './worldmap'
 
+
+/*
+Description:
+  Calcutaes the Mean value of the given array
+*/
 function calcMean(array) {
   let sum = 0;
   for( let i = 0; i < array.length; i++ ){
@@ -11,6 +16,11 @@ function calcMean(array) {
   return sum/array.length;
 }
 
+
+/*
+Description:
+  Calcutaes the average education level value of the given dataset
+*/
 function calcAverageEdLevel(data, progLangFilter, compFilter) {
   let countryStats = {}
   data.map(row => {
@@ -48,6 +58,10 @@ function calcAverageEdLevel(data, progLangFilter, compFilter) {
   return [min, max, countryStats];
 }
 
+/*
+Description:
+  Calcutaes the average compensation value of the given dataset
+*/
 function calcAverageCompensation(data) {
   let countryStats = {}
 
@@ -77,6 +91,10 @@ function calcAverageCompensation(data) {
   return [min, max, countryStats];
 }
 
+/*
+Description:
+  Calcutaes the number of programmers per country of the given dataset
+*/
 function calcNumberOfProgrammers(data) {
   let countryStats = {}
 
@@ -104,6 +122,11 @@ function calcNumberOfProgrammers(data) {
   return [min, max, countryStats];
 }
 
+
+/*
+Description:
+  Crates the color coding of the heatmap
+*/
 export const colorCoding = (data, heatMapVisu, progLangFilter, compFilter) => {
   if (!data) {
     return [0, 0, null]
