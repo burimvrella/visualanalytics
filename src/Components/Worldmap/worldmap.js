@@ -9,29 +9,106 @@ const path = d3.geoPath(projection);
 //const graticule = d3.geoGraticule();
 const width = 1200;
 const height = 500;
+var infoSettings = null;
+let selectedCountryId = '';
+let selectedCountryColor = '';
+let selectedHeatmapVisu = '';
+let selectedProgLangFilter = '';
+let selectedCompFilterMin = 0;
+let selectedCompFilterMax = 0;
+let colorScale = '';
+let countryStats = null;
 
+/*
+Description:
+  Replaces special character of the given name
+*/
 export function convertNameToId(name) {
   let id = name.replace(/ /g, '_');
   id = id.replace(/\./g, '');
+  id = id.replace(/'/g, '');
   // console.log('Name: ' + name + ' id: ' + id)
   return id;
 }
 
+/*
+Description:
+  Converts special character of the given name
+*/
 function convertIdToName(name) {
   let id = name.replace(/_/g, ' ');
   // console.log('Name: ' + name + ' id: ' + id)
   return id;
 }
 
+/*
+Description:
+  Handler function to set the react state to the given country id 
+*/
+function handleCountrySelection(countryId) {
+  let selCountry = d3.select('#' + countryId)
+  selCountry.style('fill', 'orange')
+
+  // unselect item
+  if (selectedCountryId !== '') {
+    let prevSelCountry = d3.select('#' + selectedCountryId)
+    prevSelCountry.style('fill', selectedCountryColor)
+  }
+
+  // save country selection
+  selectedCountryId = countryId
+  selectedCountryColor = selCountry.attr("fill")
+  // console.log('selected countryId: ' + selectedCountryId + 'fill: ' + selectedCountryColor)
+}
+
+/*
+function getColorCountry(id) {
+  let color = countryStats[id]
+  console.log(color)
+  if (color === undefined) {
+    color = 'grey'
+  }
+  return color;
+}
+*/
+
+/*
+Description:
+  Resets the color coding
+*/
+function renewColorCoding(data, gRef) {
+  let min = 0;
+  let max = 0;
+  [min, max, countryStats] = colorCoding(data, selectedHeatmapVisu, selectedProgLangFilter,
+    [selectedCompFilterMin, selectedCompFilterMax])
+  // console.log('renewColorCoding [' + selectedHeatmapVisu + ' | ' + selectedProgLangFilter + ' | ' + selectedCompensationFilter)
+
+  const svgG = d3.select(gRef.current);
+  if (svgG.selectAll('path')._groups[0] === undefined) {
+    return
+  }
+  svgG.selectAll('path')._groups[0].forEach(path => {
+    if (path.id === '') return;
+    const pathRef = d3.select('#' + path.id);
+    colorScale = d3.scaleSequential(d3.interpolateBlues).domain([min, max]);
+    pathRef.style('fill', colorScale(countryStats[path.id]));
+  })
+}
+
+
+/*
+Description:
+  Handles all the import features of the worldmap and draws it
+*/
 export default function Worldmap({geoJson, data}) {
   const svgRef = useRef();
   const gRef = useRef();
   const divRef = useRef();
 
-  var infoSettings = useContext(SettingsContext);
-  
-  let selectedCountry, selectedCountryColor = null;
-  let countryStats = null;
+  infoSettings = useContext(SettingsContext);
+
+
+  //handles the zooming
   const handleZoom = ({transform}) => {
     gRef.current.setAttribute('transform', transform.toString());
   };
@@ -42,18 +119,39 @@ export default function Worldmap({geoJson, data}) {
     .on('zoom', handleZoom);
 
   useEffect(() => {
-    console.log('Chosen country:' + infoSettings.country)
-    if (infoSettings.country) {
-      let countryId = convertNameToId(infoSettings.country)
-      d3.select('#' + countryId).style('fill', 'orange')
+    // console.log('Chosen country:' + infoSettings.country)
+    if (infoSettings.country !== "") {
+      console.log('infoSettings.country changed')
+      handleCountrySelection(convertNameToId(infoSettings.country));
+      infoSettings.setCountry(convertIdToName(infoSettings.country));
     }
 
-    console.log(infoSettings.income)
-    console.log(infoSettings.heatmap)
-    console.log(infoSettings.programmingLanguage)
+    if (infoSettings.heatmap !== selectedHeatmapVisu) {
+      selectedHeatmapVisu = infoSettings.heatmap
+      console.log('heat map need change to:' + infoSettings.heatmap)
+
+      renewColorCoding(data, gRef);
+    }
+
+    if (infoSettings.programmingLanguage) {
+      console.log('ProgrammingLanguage' + infoSettings.programmingLanguage)
+      if (infoSettings.programmingLanguage !== selectedProgLangFilter) {
+        selectedProgLangFilter = infoSettings.programmingLanguage;
+        renewColorCoding(data, gRef);
+      }
+    }
+    if (infoSettings.income[0] !== selectedCompFilterMin || infoSettings.income[1] !== selectedCompFilterMax ) {
+      if (infoSettings.income[0] !== undefined || infoSettings.income[1] !== undefined) {
+        console.log('ProgrammingLanguage' + selectedCompFilterMin + " | " + selectedCompFilterMax);
+        selectedCompFilterMin = infoSettings.income[0];
+        selectedCompFilterMax = infoSettings.income[1];
+        renewColorCoding(data, gRef);
+      }
+    }
 
   },[infoSettings])
 
+  
   useEffect(() => {
     const svgElement = d3.select(svgRef.current);
 
@@ -88,6 +186,18 @@ export default function Worldmap({geoJson, data}) {
         .duration(20)
         .style("opacity", 0)
     }
+    const mouseclicker = function (event, d) {
+      //console.log('mouseclicker')
+      if (event.target.id === '') {
+        return
+      }
+      handleCountrySelection(event.target.id);
+      infoSettings.setCountry(convertIdToName(event.target.id));
+
+      tooltip
+        .transition()
+        .style("opacity", 0)
+    }
 
     svgElement.call(zoom);
     svgElement.selectAll('path')
@@ -96,6 +206,7 @@ export default function Worldmap({geoJson, data}) {
           .on("mouseover", mouseover)
           .on("mousemove", mousemove)
           .on("mouseleave", mouseleave)
+          .on("click", mouseclicker)
       })
 
     return () => {
@@ -113,7 +224,7 @@ export default function Worldmap({geoJson, data}) {
 
   let min = 0;
   let max = 0;
-  [min, max, countryStats] = colorCoding(data)
+  [min, max, countryStats] = colorCoding(data, selectedHeatmapVisu, selectedProgLangFilter, [0, 0])
   if (!countryStats) {
     return (
       <div className="Up-Worldmap" >
@@ -121,20 +232,11 @@ export default function Worldmap({geoJson, data}) {
         <pre>Loading...</pre>
       </div>
     )}
-  // colorCoding(data)
-  const colorScale = d3.scaleSequential(d3.interpolateBlues).domain([min, max]);
+  colorScale = d3.scaleSequential(d3.interpolateBlues).domain([min, max]);
 
   const mouseclick = function (event, d) {
-    // console.log(event)
-    // console.log(event.target.id)
-    if (selectedCountry){
-      d3.select(selectedCountry).style('fill', selectedCountryColor)
-      selectedCountry = null;
-    }
-    selectedCountry = event.target;
-    selectedCountryColor = event.target.fill
-    d3.select(event.target).style('fill', 'red')
-    return event.target
+    // console.log('mouseclick')
+    handleCountrySelection(event.target.id);
   }
 
   return (

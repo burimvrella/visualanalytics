@@ -1,5 +1,10 @@
 import {convertNameToId} from './worldmap'
 
+
+/*
+Description:
+  Calcutaes the Mean value of the given array
+*/
 function calcMean(array) {
   let sum = 0;
   for( let i = 0; i < array.length; i++ ){
@@ -11,15 +16,29 @@ function calcMean(array) {
   return sum/array.length;
 }
 
-function calcAverageEdLevel(data) {
-  let countryStats = {}
 
+/*
+Description:
+  Calcutaes the average education level value of the given dataset
+*/
+function calcAverageEdLevel(data, progLangFilter, compFilter) {
+  let countryStats = {}
   data.map(row => {
     let countryId = convertNameToId(row.Country)
     if (!countryStats[countryId]) {
       countryStats[countryId] = [];
     }
-    countryStats[countryId].push(row.EdLevel);
+    if (progLangFilter !== '' && row[progLangFilter] === '0') {
+      return
+    }
+    if (compFilter[0] !== 0 || compFilter[1] !== 0) {
+      //console.log('compFilterActivated')
+      const compensation = parseInt(row.CompYearEur)
+      if (compensation < compFilter[0] || compensation > compFilter[1]) {
+        return;
+      }
+    }
+    countryStats[countryId].push(row.EdLevel)
   })
   //console.log(countryStats['Germany'])
   let min = 1000000;
@@ -34,11 +53,15 @@ function calcAverageEdLevel(data) {
     if (avg > max) {
       max = avg;
     }
-    //console.log("Average Edlevel of " + key + " = " + avg + " len: " + len);
+    // console.log("Average Edlevel of " + key + " = " + avg + " len: " + len);
   });
   return [min, max, countryStats];
 }
 
+/*
+Description:
+  Calcutaes the average compensation value of the given dataset
+*/
 function calcAverageCompensation(data) {
   let countryStats = {}
 
@@ -63,11 +86,15 @@ function calcAverageCompensation(data) {
     if (avg > max) {
       max = avg;
     }
-    console.log("Average Compensation of " + key + " = " + avg + " len: " + len);
+    // console.log("Average Compensation of " + key + " = " + avg + " len: " + len);
   });
   return [min, max, countryStats];
 }
 
+/*
+Description:
+  Calcutaes the number of programmers per country of the given dataset
+*/
 function calcNumberOfProgrammers(data) {
   let countryStats = {}
 
@@ -95,13 +122,25 @@ function calcNumberOfProgrammers(data) {
   return [min, max, countryStats];
 }
 
-export const colorCoding = (data) => {
+
+/*
+Description:
+  Crates the color coding of the heatmap
+*/
+export const colorCoding = (data, heatMapVisu, progLangFilter, compFilter) => {
   if (!data) {
     return [0, 0, null]
   }
-  //[min, max, countrystats] = calcAverageEdLevel(data)
-  const [min, max, countrystats] = calcNumberOfProgrammers(data)
-  // console.log(min + " | " + max + " | ")
-  // console.log(countrystats)
-  return [min, max, countrystats]
+  let min = 0;
+  let max = 0;
+  let countrystats = null;
+  if (heatMapVisu === 'NumProgCountry') {
+    [min, max, countrystats] = calcNumberOfProgrammers(data);
+  } else if (heatMapVisu === 'CompYearCountry') {
+    [min, max, countrystats] = calcAverageCompensation(data);
+  } else {
+    // console.log('progLangFilter: ' + progLangFilter + ' compFilter' + compFilter);
+    [min, max, countrystats] = calcAverageEdLevel(data, progLangFilter, compFilter);
+  }
+  return [min, max, countrystats];
 }

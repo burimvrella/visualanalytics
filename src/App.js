@@ -11,7 +11,9 @@ import surveydata from './data/surveydata_v5.csv';
 
 function App() {
   const [data, setData] = useState([]);
-  const [country, setCountry] = useState();
+  const [country, setCountry] = useState("");
+  const [scatterplotCountry, setScatterplotCountry] = useState("");
+  const [treemapCountry, setTreemapCountry] = useState("");
   const [xAxis, setxAxis] = useState("");
   const [yAxis, setyAxis] = useState("");
 
@@ -39,12 +41,16 @@ function App() {
         income,
         programmingLanguage,
         heatmap,
+        treemapCountry,
+        scatterplotCountry,
         setxAxis,
         setyAxis,
         setIncome,
         setProgrammingLanguage,
         setHeatmap,
-        setCountry
+        setCountry,
+        setTreemapCountry,
+        setScatterplotCountry
         }}>
 
         <Settings data={data}/>

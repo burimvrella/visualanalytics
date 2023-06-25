@@ -1,12 +1,24 @@
-import React, {useRef} from 'react'
+import React, {useContext, useEffect, useRef} from 'react'
 import './treemap.css'
 import * as d3 from 'd3';
+import SettingsContext from '../Settings/settingscontext';
+
 
 const width = 600;
 const height = 400;
-
-function renderTreemap(svgRef, treemapData) {
+/*
+Description:
+  Draws the Treemap
+Params:
+  treemapData -> The dataset used to draw the treemap
+  infoSettings -> The context that contains the react state var
+  minValue -> Min value to dertinmate the range of the shown data in the treemap
+  maxValue -> Max value to dertinmate the range of the shown data in the treemap
+  svgRef -> A react reference of the SVG file
+*/
+function renderTreemap(svgRef, treemapData, infoSettings, minValue, maxValue) {
   const svg = d3.select(svgRef.current);
+  svg.selectAll('g').remove();
 
   svg.attr('width', width).attr('height', height);
 
@@ -24,14 +36,16 @@ function renderTreemap(svgRef, treemapData) {
     .join('g')
     .attr('transform', (d) => `translate(${d.x0},${d.y0})`);
 
-  const fader = (color) => d3.interpolateRgb(color, '#fff')(0.3);
-  const colorScale = d3.scaleOrdinal(d3.schemeCategory10.map(fader));
+  const colorScale = d3.scaleSequential(d3.interpolateBlues).domain([minValue, maxValue+100]);
 
   nodes
     .append('rect')
     .attr('width', (d) => d.x1 - d.x0)
     .attr('height', (d) => d.y1 - d.y0)
-    .attr('fill', (d) => colorScale(d.data.name));
+    .attr('fill', (d) => colorScale(d.data.value))
+    .on("click", (event, d) => {
+      infoSettings.setProgrammingLanguage(d.id);
+    });
 
   const fontSize = 12;
   nodes
@@ -42,6 +56,14 @@ function renderTreemap(svgRef, treemapData) {
     .attr('y', fontSize);
 }
 
+
+/*
+Description:
+  Filters the data of the given country
+Params:
+  data -> The whole dataset
+  query_country -> The country name choosen by the user
+*/
 function filterData(query_country, data) {
   let progLangStats = {};
   let treemapData = [];
@@ -50,7 +72,7 @@ function filterData(query_country, data) {
   data.columns.forEach(column => {
     if (column.includes("#")) {
       progLanguages.push(column)
-      progLangStats[column] = 0
+      progLangStats[column] = 0;
     }
   })
 
@@ -64,7 +86,15 @@ function filterData(query_country, data) {
     }
   })
 
+  let maxValue = 0;
+  let minValue = 9999;
   Object.keys(progLangStats).forEach(name => {
+    if (progLangStats[name] > maxValue) {
+      maxValue = progLangStats[name];
+    }
+    if (progLangStats[name] < minValue) {
+      minValue = progLangStats[name];
+    }
     treemapData.push({"name": name, "parent": query_country, "value": progLangStats[name]})
     treemapData.sort((p1,p2) => (p1.value < p2.value) ? 1 : (p1.value > p2.value) ? -1 : 0)
   });
@@ -73,22 +103,36 @@ function filterData(query_country, data) {
     treemapData.length = maxLength
   }
   treemapData.push({"name": query_country, "parent": "", "value": ""})
-  return treemapData
+  return [treemapData, minValue, maxValue]
 }
 
 export default function Treemap({data}) {
+  const infoSettings = useContext(SettingsContext);
   const svgRef = useRef(null);
-  const query_country = 'United States of America'
+  let query_country = 'United States of America'
+  let treemap_data = '';
+  let min = 0;
+  let max = 0;
+
+  useEffect(() => {
+    // console.log('Chosen country:' + infoSettings.country)
+    if (infoSettings.country !== "") {
+      query_country = infoSettings.country;
+      [treemap_data, min, max] = filterData(query_country, data)
+      renderTreemap(svgRef, treemap_data, infoSettings, min, max)
+    }
+  },[infoSettings])
 
   if (data.length === 0) {
     return <pre>Loading...</pre>;
   }
-  const treemap_data = filterData(query_country, data)
-  renderTreemap(svgRef, treemap_data)
+  [treemap_data, min, max] = filterData(query_country, data)
+  renderTreemap(svgRef, treemap_data, infoSettings, min, max)
 
+  // Renders the HTML code 
   return (
     <div className="Down-Left-Treemap">
-      <h1>Treemap</h1>
+      <h1>Treemap of {infoSettings.country}</h1>
       <svg ref={svgRef} viewBox="0 0 450 400"></svg>
     </div>)
 }
