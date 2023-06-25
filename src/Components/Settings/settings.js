@@ -3,8 +3,12 @@ import Slider from 'react-slider';
 import './settings.css';
 import SettingsContext from '../Settings/settingscontext';
 
-
-
+/*
+Description:
+  Handles all the settings component and user Inputs
+Params:
+  props -> variables given from App.js includes the data variable
+*/
 export default function Settings(props) { 
 
   let dropdownaxis = [];
@@ -21,8 +25,6 @@ export default function Settings(props) {
   var infoSettings = useContext(SettingsContext);
   const [incomes, setIncomes] = useState([min,max]);
   
-  
-
 
     if (data.length === 0) {
       return (
@@ -38,6 +40,8 @@ export default function Settings(props) {
       let countrys = []
       let incomeYearly = []
  
+
+      //Handler function that set states to use in other react components
       const handleDropdownProgLang = (event) => {
         infoSettings.setProgrammingLanguage(event.target.value);
       };
@@ -82,6 +86,7 @@ export default function Settings(props) {
     }, 1000);};
     
 
+    //Initalisation of the Dropdown options
       data.forEach(row => {
         countrys.push(row.Country)
         incomeYearly.push(row.CompYearEur)
@@ -107,6 +112,7 @@ export default function Settings(props) {
         }
       });
 
+      //Returning the Settings HTML code
       return (
         <div className='Settings'>
 

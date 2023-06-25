@@ -19,6 +19,10 @@ let selectedCompFilterMax = 0;
 let colorScale = '';
 let countryStats = null;
 
+/*
+Description:
+  Replaces special character of the given name
+*/
 export function convertNameToId(name) {
   let id = name.replace(/ /g, '_');
   id = id.replace(/\./g, '');
@@ -27,12 +31,20 @@ export function convertNameToId(name) {
   return id;
 }
 
+/*
+Description:
+  Converts special character of the given name
+*/
 function convertIdToName(name) {
   let id = name.replace(/_/g, ' ');
   // console.log('Name: ' + name + ' id: ' + id)
   return id;
 }
 
+/*
+Description:
+  Handler function to set the react state to the given country id 
+*/
 function handleCountrySelection(countryId) {
   let selCountry = d3.select('#' + countryId)
   selCountry.style('fill', 'orange')
@@ -49,6 +61,7 @@ function handleCountrySelection(countryId) {
   // console.log('selected countryId: ' + selectedCountryId + 'fill: ' + selectedCountryColor)
 }
 
+/*
 function getColorCountry(id) {
   let color = countryStats[id]
   console.log(color)
@@ -57,7 +70,12 @@ function getColorCountry(id) {
   }
   return color;
 }
+*/
 
+/*
+Description:
+  Resets the color coding
+*/
 function renewColorCoding(data, gRef) {
   let min = 0;
   let max = 0;
@@ -77,6 +95,11 @@ function renewColorCoding(data, gRef) {
   })
 }
 
+
+/*
+Description:
+  Handles all the import features of the worldmap and draws it
+*/
 export default function Worldmap({geoJson, data}) {
   const svgRef = useRef();
   const gRef = useRef();
@@ -84,6 +107,8 @@ export default function Worldmap({geoJson, data}) {
 
   infoSettings = useContext(SettingsContext);
 
+
+  //handles the zooming
   const handleZoom = ({transform}) => {
     gRef.current.setAttribute('transform', transform.toString());
   };
@@ -126,6 +151,7 @@ export default function Worldmap({geoJson, data}) {
 
   },[infoSettings])
 
+  
   useEffect(() => {
     const svgElement = d3.select(svgRef.current);
 

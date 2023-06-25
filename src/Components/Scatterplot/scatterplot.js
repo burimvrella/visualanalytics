@@ -4,11 +4,21 @@ import * as d3 from 'd3';
 import SettingsContext from '../Settings/settingscontext';
 
 
+/*
+Description:
+  Draws the Scatterplot
+Params:
+  data -> The whole Dataset
+  xAxisName -> The name Of the choosen x Axis
+  yAxisName -> The name Of the choosen y Axis
+  svgRef -> A react reference of the SVG file
+*/
 function drawScatterplot(data,xAxisName,yAxisName,svgRef){
 
   const width = 500;
   const height = 400;
   const svg =  d3.select(svgRef.current)
+
   svg.selectAll('g').remove()
   svg.selectAll('circle').remove()
   svg.selectAll('text').remove()
@@ -100,11 +110,10 @@ function drawScatterplot(data,xAxisName,yAxisName,svgRef){
     var mousemove = function(event,d) {
       tooltip
         .html("Test")
-        .style("left", (d3.pointer(event)[0] + 30) + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
+        .style("left", (d3.pointer(event)[0] + 30) + "px")
         .style("top", d3.pointer(event)[1] + "px")
     }
   
-    // A function that change this tooltip when the leaves a point: just need to set opacity to 0 again
     var mouseleave = function(d) {
       tooltip
         .transition()
@@ -112,7 +121,6 @@ function drawScatterplot(data,xAxisName,yAxisName,svgRef){
         .style("opacity", 0)
       }
       
-
     svg.selectAll()
         .data(data)
         .enter()
@@ -145,6 +153,7 @@ export default function Scatterplot(props) {
 
   const svgRef = useRef(null);
 
+
   useEffect(() => {
 
     if(infoSettings.scatterplotCountry !== ""){
@@ -169,6 +178,8 @@ export default function Scatterplot(props) {
     }
 
   },[infoSettings]);
+
+  //Return the HTML Structure of the Sector Down-Right-Scatter
 
   if (props.data.length === 0 || infoSettings.xAxis === "" || infoSettings.yAxis === "") {
     return (

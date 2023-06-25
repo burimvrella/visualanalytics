@@ -2,12 +2,20 @@ import React, {useContext, useEffect, useRef} from 'react'
 import './treemap.css'
 import * as d3 from 'd3';
 import SettingsContext from '../Settings/settingscontext';
-import {convertNameToId} from "../Worldmap/worldmap";
 
 
 const width = 600;
 const height = 400;
-
+/*
+Description:
+  Draws the Treemap
+Params:
+  treemapData -> The dataset used to draw the treemap
+  infoSettings -> The context that contains the react state var
+  minValue -> Min value to dertinmate the range of the shown data in the treemap
+  maxValue -> Max value to dertinmate the range of the shown data in the treemap
+  svgRef -> A react reference of the SVG file
+*/
 function renderTreemap(svgRef, treemapData, infoSettings, minValue, maxValue) {
   const svg = d3.select(svgRef.current);
   svg.selectAll('g').remove();
@@ -48,6 +56,14 @@ function renderTreemap(svgRef, treemapData, infoSettings, minValue, maxValue) {
     .attr('y', fontSize);
 }
 
+
+/*
+Description:
+  Filters the data of the given country
+Params:
+  data -> The whole dataset
+  query_country -> The country name choosen by the user
+*/
 function filterData(query_country, data) {
   let progLangStats = {};
   let treemapData = [];
@@ -113,9 +129,10 @@ export default function Treemap({data}) {
   [treemap_data, min, max] = filterData(query_country, data)
   renderTreemap(svgRef, treemap_data, infoSettings, min, max)
 
+  // Renders the HTML code 
   return (
     <div className="Down-Left-Treemap">
-      <h1>Treemap</h1>
+      <h1>Treemap of {infoSettings.country}</h1>
       <svg ref={svgRef} viewBox="0 0 450 400"></svg>
     </div>)
 }
