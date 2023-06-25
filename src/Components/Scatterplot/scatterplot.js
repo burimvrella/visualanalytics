@@ -6,7 +6,6 @@ import SettingsContext from '../Settings/settingscontext';
 
 function drawScatterplot(data,xAxisName,yAxisName,svgRef){
 
-
   const width = 500;
   const height = 400;
   const svg =  d3.select(svgRef.current)
@@ -77,10 +76,43 @@ function drawScatterplot(data,xAxisName,yAxisName,svgRef){
 
     svg.append('text')
       .attr('id','yaxis')
-      .attr('y', height/2 - 40)
-      .attr('x', width/16 - 100)
+      .attr('y', height/4 - 10)
+      .attr('x', width/2 - 90)
       .text(yAxisName);
-        
+
+
+    var tooltip = d3.select("Down-Right-Scatter")
+      .append("div")
+      .style("opacity", 0)
+      .attr("class", "tooltip")
+      .style("background-color", "white")
+      .style("border", "solid")
+      .style("border-width", "1px")
+      .style("border-radius", "5px")
+      .style("padding", "10px")
+
+
+    var mouseover = function(d) {
+      tooltip
+        .style("opacity", 1)
+    }
+  
+    var mousemove = function(event,d) {
+      tooltip
+        .html("Test")
+        .style("left", (d3.pointer(event)[0] + 30) + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
+        .style("top", d3.pointer(event)[1] + "px")
+    }
+  
+    // A function that change this tooltip when the leaves a point: just need to set opacity to 0 again
+    var mouseleave = function(d) {
+      tooltip
+        .transition()
+        .duration(200)
+        .style("opacity", 0)
+      }
+      
+
     svg.selectAll()
         .data(data)
         .enter()
@@ -88,39 +120,11 @@ function drawScatterplot(data,xAxisName,yAxisName,svgRef){
         .attr('cx', d => xScale(d[xAxisName]))
         .attr('cy', d => yScale(d[yAxisName]))
         .attr('r', 2)
-        .on('mouseover', function(d, i) {
-          // make the mouseover'd element
-          // bigger and red
-          d3.select(this)
-            .transition()
-            .duration(50)
-            .attr('r', 4)
-            .attr('fill', '#ff0000');
-          
-          
-          d3.select(this)
-            .append("text")
-              .attr("class", "mylabel")
-              .attr("transform", "translate(0,0)")
-              .attr("x", function(d) { return yScale(d.y); })
-              .attr("dx", "6") // margin
-              .attr("dy", ".35em") // vertical-align
-              .text(function(d) { 
-                console.log(d.ID)
-                return "Hallo"
-              })
-        })
-        .on('mouseout', function(d, i) {
-          // return the mouseover'd element
-          // to being smaller and black
-          d3.select(this)
-            .transition()
-            .duration(50)
-            .attr('r', 2)
-            .attr('fill', '#000000');
+        .on("mouseover", mouseover )
+        .on("mousemove", mousemove )
+        .on("mouseleave", mouseleave) 
 
-          
-        });
+
 
         if(xAxisName === 'ID')
         {
@@ -182,7 +186,5 @@ export default function Scatterplot(props) {
       )
 
   }
-
-  
 
 }
