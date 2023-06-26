@@ -1,5 +1,36 @@
-.Up-Wordmap {
-  grid-area: Up-Wordmap;  
-  background-color: blue;
+.Up-Worldmap{
+  grid-area: Up-Worldmap;
+  margin: 3px;
+  background-color: lightgray;
+  padding: 20px 50px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: black;
+  border-radius: 10px;
+  text-align: center;
 }
+pre {
+  font-size: large;
+}
+.marks .sphere {
+  fill: #74A8F85E
+}
+.marks .interiors {
+  fill: none;
+  stroke: rgba(0, 0, 0, 0.29);
+}
+.marks .graticules {
+  fill: none;
+  stroke: #A1A1A12D
+}
+
+.country:hover {
+  fill: red;
+}
+
+#selectedCountry{
+  fill: red;
+}
+
+
 

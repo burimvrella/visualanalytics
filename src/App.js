@@ -1,20 +1,65 @@
-import React, { useState } from 'react';
+import React, {useState, useEffect} from 'react';
 import './App.css';
 import Settings from './Components/Settings/settings.js';
 import Worldmap from './Components/Worldmap/worldmap.js';
 import Treemap from './Components/Treemap/treemap.js';
 import Scatter from './Components/Scatterplot/scatterplot.js';
+import {useData} from './Components/Worldmap/useData.js';
+import SettingsContext from './Components/Settings/settingscontext';
+import * as d3 from 'd3';
+import surveydata from './data/surveydata_v5.csv';
 
 function App() {
+  const [data, setData] = useState([]);
+  const [country, setCountry] = useState("");
+  const [scatterplotCountry, setScatterplotCountry] = useState("");
+  const [treemapCountry, setTreemapCountry] = useState("");
+  const [xAxis, setxAxis] = useState("");
+  const [yAxis, setyAxis] = useState("");
 
-  const [data] = useState([[90, 20], [20, 100], [66, 44], [53, 80], [24, 182], [80, 72], [10, 76], [33, 150], [100, 15]]);
+  const [income, setIncome] = useState([]);
+
+
+  const [programmingLanguage, setProgrammingLanguage] = useState("")
+  const [heatmap, setHeatmap] = useState("")
+
+  useEffect(() => {
+    d3.csv(surveydata).then(data => {
+      setData(data)
+    });
+  }, []);
+
+
+  const geoJson = useData();
+
   return (
     <div className="App">
-      <Settings data={data} />
-      <Worldmap />
-      <Treemap />
-      <Scatter data={data} />
-      </div>
+      <SettingsContext.Provider value={{
+        country,
+        xAxis,
+        yAxis,
+        income,
+        programmingLanguage,
+        heatmap,
+        treemapCountry,
+        scatterplotCountry,
+        setxAxis,
+        setyAxis,
+        setIncome,
+        setProgrammingLanguage,
+        setHeatmap,
+        setCountry,
+        setTreemapCountry,
+        setScatterplotCountry
+        }}>
+
+        <Settings data={data}/>
+        <Worldmap geoJson={geoJson} data={data}/>
+        <Treemap data={data}/>
+        <Scatter data={data}/>
+
+      </SettingsContext.Provider>
+    </div>
   );
 }
 
