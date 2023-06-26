@@ -108,7 +108,7 @@ export default function Settings(props) {
             dropdownaxis.push({ id: lable, value: lable })
           }  
         } else {
-          dropdownProgLanguage.push({ id: lable, value: lable })
+          dropdownProgLanguage.push({ id: lable.substr(1), value: lable })
         }
       });
 
