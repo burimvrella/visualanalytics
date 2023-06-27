@@ -48,14 +48,23 @@ function calcAverageEdLevel(data, progLangFilter, compFilter) {
   return [min, max, countryStats];
 }
 
-function calcAverageCompensation(data) {
+function calcAverageCompensation(data, progLangFilter, compFilter) {
   let countryStats = {}
 
   data.map(row => {
     let countryId = convertNameToId(row.Country)
-
     if (!countryStats[countryId]) {
       countryStats[countryId] = [];
+    }
+    if (progLangFilter !== '' && row[progLangFilter] === '0') {
+      return
+    }
+    if (compFilter[0] !== 0 || compFilter[1] !== 0) {
+      //console.log('compFilterActivated')
+      const compensation = parseInt(row.CompYearEur)
+      if (compensation < compFilter[0] || compensation > compFilter[1]) {
+        return;
+      }
     }
     countryStats[countryId].push(row.CompYearEur);
   })
@@ -77,7 +86,7 @@ function calcAverageCompensation(data) {
   return [min, max, countryStats];
 }
 
-function calcNumberOfProgrammers(data) {
+function calcNumberOfProgrammers(data, progLangFilter, compFilter) {
   let countryStats = {}
 
   data.map(row => {
@@ -85,6 +94,16 @@ function calcNumberOfProgrammers(data) {
 
     if (!countryStats[countryId]) {
       countryStats[countryId] = 0;
+    }
+    if (progLangFilter !== '' && row[progLangFilter] === '0') {
+      return
+    }
+    if (compFilter[0] !== 0 || compFilter[1] !== 0) {
+      //console.log('compFilterActivated')
+      const compensation = parseInt(row.CompYearEur)
+      if (compensation < compFilter[0] || compensation > compFilter[1]) {
+        return;
+      }
     }
     countryStats[countryId] += 1;
   })
@@ -112,9 +131,9 @@ export const colorCoding = (data, heatMapVisu, progLangFilter, compFilter) => {
   let max = 0;
   let countrystats = null;
   if (heatMapVisu === 'NumProgCountry') {
-    [min, max, countrystats] = calcNumberOfProgrammers(data);
+    [min, max, countrystats] = calcNumberOfProgrammers(data, progLangFilter, compFilter);
   } else if (heatMapVisu === 'CompYearCountry') {
-    [min, max, countrystats] = calcAverageCompensation(data);
+    [min, max, countrystats] = calcAverageCompensation(data, progLangFilter, compFilter);
   } else {
     // console.log('progLangFilter: ' + progLangFilter + ' compFilter' + compFilter);
     [min, max, countrystats] = calcAverageEdLevel(data, progLangFilter, compFilter);
