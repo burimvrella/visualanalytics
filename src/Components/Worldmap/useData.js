@@ -4,9 +4,13 @@ import {feature, mesh} from 'topojson';
 
 const jsonUrl = './countries-50m.json';
 
+
+/*
+Description:
+  Initialization of the data to render the worldmap
+*/
 export const useData = () => {
   const [data, setData] = useState(null);
-  //console.log('useData()');
 
   useEffect(() => {
     json(jsonUrl).then(topoJson => {
